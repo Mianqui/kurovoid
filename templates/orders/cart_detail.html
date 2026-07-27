@@ -5,33 +5,33 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="font-['Space_Grotesk'] text-3xl font-bold mb-8">Carrito</h1>
+    <h1 class="font-heading text-3xl font-bold mb-8">Carrito</h1>
 
     {% if cart|length > 0 %}
     <div class="space-y-4">
         {% for item in cart %}
-        <div class="flex items-center gap-4 p-4" style="border: 1px solid var(--border);" data-item-id="{{ item.product.id }}">
-            <div class="w-20 h-24 shrink-0 flex items-center justify-center overflow-hidden" style="background-color: var(--bg-secondary);">
+        <div class="cart-item" data-item-id="{{ item.product.id }}">
+            <div class="cart-item-img-container">
                 {% with main_image=item.product.images.all|first %}
-                <img src="{% if main_image %}{{ main_image.image.url }}{% else %}{% static 'img/producto-card.jpg' %}{% endif %}" alt="" class="w-full h-full object-cover">
+                <img src="{% if main_image %}{{ main_image.image.url }}{% else %}{% static 'img/producto-card.jpg' %}{% endif %}" alt="">
                 {% endwith %}
             </div>
-            <div class="flex-1 min-w-0">
-                <h3 class="font-['Space_Grotesk'] font-medium text-sm">{{ item.product.name }}</h3>
-                <p class="text-xs mt-1" style="color: var(--text-secondary);">
+            <div class="cart-item-info">
+                <h3 class="cart-item-title">{{ item.product.name }}</h3>
+                <p class="cart-item-details">
                     {% if item.size %}Talla: {{ item.size }}{% endif %}
                     {% if item.size and item.color %} | {% endif %}
                     {% if item.color %}Color: {{ item.color }}{% endif %}
                 </p>
-                <p class="text-sm mt-1" style="color: var(--text-secondary);">${{ item.price }} c/u</p>
+                <p class="cart-item-price">${{ item.price }} c/u</p>
             </div>
             <div class="flex items-center gap-3">
-                <input type="number" value="{{ item.quantity }}" min="1" class="cart-quantity w-16 px-2 py-1 text-sm text-center" style="background-color: var(--bg-secondary); border: 1px solid var(--border); color: var(--text-primary);" data-product-id="{{ item.product.id }}" data-update-url="{% url 'orders:cart_update' item.product.id %}">
+                <input type="number" value="{{ item.quantity }}" min="1" class="cart-quantity cart-quantity-input" data-product-id="{{ item.product.id }}" data-update-url="{% url 'orders:cart_update' item.product.id %}">
             </div>
-            <p class="text-sm font-medium w-24 text-right">${{ item.total_price }}</p>
+            <p class="cart-item-total">${{ item.total_price }}</p>
             <form method="post" action="{% url 'orders:cart_remove' item.product.id %}" class="cart-remove-form">
                 {% csrf_token %}
-                <button type="submit" class="transition-colors hover:opacity-80" style="color: var(--text-secondary);">
+                <button type="submit" class="cart-remove-btn">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
                     </svg>
@@ -41,16 +41,16 @@
         {% endfor %}
     </div>
 
-    <div class="flex justify-between items-center mt-8 pt-6" style="border-top: 1px solid var(--border);">
-        <p class="text-lg font-medium">Total: <span id="cart-total">${{ cart.get_total_price }}</span></p>
-        <a href="#" class="px-6 py-3 text-sm font-medium theme-accent-bg transition-opacity hover:opacity-80">
+    <div class="cart-summary">
+        <p class="cart-total-text">Total: <span id="cart-total">${{ cart.get_total_price }}</span></p>
+        <a href="#" class="btn-primary">
             Proceder al pago
         </a>
     </div>
     {% else %}
     <div class="text-center py-20">
-        <p style="color: var(--text-secondary);">Tu carrito está vacío.</p>
-        <a href="{% url 'catalog:product_list' %}" class="inline-block mt-4 px-6 py-2 text-sm font-medium theme-accent-bg transition-opacity hover:opacity-80">
+        <p class="theme-text-secondary">Tu carrito está vacío.</p>
+        <a href="{% url 'catalog:product_list' %}" class="btn-primary mt-4">
             Ir a la tienda
         </a>
     </div>

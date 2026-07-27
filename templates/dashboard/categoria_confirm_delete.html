@@ -4,20 +4,20 @@
 
 {% block content %}
 <div class="max-w-lg mx-auto mt-10">
-  <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6 text-center">
-    <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-red-500/10 flex items-center justify-center">
+  <div class="danger-zone text-center">
+    <div class="danger-icon-container">
       <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
       </svg>
     </div>
-    <h2 class="text-xl font-bold text-white mb-2">¿Eliminar categoría?</h2>
-    <p class="text-zinc-400 mb-1">Estás a punto de eliminar <strong class="text-white">{{ categoria.name }}</strong>.</p>
+    <h2 class="font-heading text-xl font-bold mb-2">¿Eliminar categoría?</h2>
+    <p class="theme-text-secondary mb-1">Estás a punto de eliminar <strong class="theme-text-primary">{{ categoria.name }}</strong>.</p>
     {% if has_products %}
     <div class="mt-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">
       Esta categoría tiene productos asociados. No se puede eliminar.
     </div>
     {% else %}
-    <p class="text-zinc-500 text-sm">Esta acción no se puede deshacer.</p>
+    <p class="theme-text-secondary text-sm">Esta acción no se puede deshacer.</p>
     {% endif %}
 
     <div class="flex items-center justify-center gap-3 mt-6">
@@ -27,7 +27,7 @@
           Eliminar
         </button>
       </form>
-      <a href="{% url 'dashboard:categoria_list' %}" class="px-4 py-2 text-zinc-400 hover:text-white transition-colors text-sm">Cancelar</a>
+      <a href="{% url 'dashboard:categoria_list' %}" class="px-4 py-2 theme-text-secondary hover:text-white transition-colors text-sm">Cancelar</a>
     </div>
   </div>
 </div>

@@ -5,59 +5,59 @@
 
 {% block content %}
 <div class="space-y-6">
-    <h1 class="font-['Space_Grotesk'] text-2xl font-bold">Usuarios</h1>
+    <h1 class="font-heading text-2xl font-bold">Usuarios</h1>
 
     {% comment %}Filtros{% endcomment %}
     <form method="get" class="flex flex-wrap items-end gap-3">
         <div class="flex-1 min-w-[200px]">
-            <label class="block text-xs text-zinc-500 mb-1">Buscar</label>
+            <label class="block text-xs theme-text-secondary mb-1">Buscar</label>
             <input type="text" name="q" value="{{ selected_q }}" placeholder="Nombre o email..." class="w-full bg-zinc-800 border border-zinc-700 text-white text-sm rounded-lg px-3 py-2">
         </div>
         <div>
-            <label class="block text-xs text-zinc-500 mb-1">Ordenar por</label>
+            <label class="block text-xs theme-text-secondary mb-1">Ordenar por</label>
             <select name="orden" class="bg-zinc-800 border border-zinc-700 text-white text-sm rounded-lg px-3 py-2">
                 <option value="reciente" {% if selected_orden == 'reciente' %}selected{% endif %}>Más reciente</option>
                 <option value="pedidos" {% if selected_orden == 'pedidos' %}selected{% endif %}>Más pedidos</option>
                 <option value="gastado" {% if selected_orden == 'gastado' %}selected{% endif %}>Más gastado</option>
             </select>
         </div>
-        <button type="submit" class="bg-zinc-700 hover:bg-zinc-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors">Filtrar</button>
-        <a href="{% url 'dashboard:usuario_list' %}" class="text-zinc-400 hover:text-zinc-200 text-sm px-3 py-2 transition-colors">Limpiar</a>
+        <button type="submit" class="bg-zinc-700 hover:bg-zinc-600 text-sm font-medium px-4 py-2 rounded-lg transition-colors">Filtrar</button>
+        <a href="{% url 'dashboard:usuario_list' %}" class="theme-text-secondary hover:text-white text-sm px-3 py-2 transition-colors">Limpiar</a>
     </form>
 
     {% comment %}Tabla{% endcomment %}
-    <div class="overflow-x-auto rounded-xl border border-zinc-800">
-        <table class="w-full text-sm">
+    <div class="overflow-x-auto rounded-xl border theme-border">
+        <table class="dash-table">
             <thead>
-                <tr class="bg-zinc-900 text-zinc-400 text-left">
-                    <th class="px-5 py-3 font-medium">Usuario</th>
-                    <th class="px-5 py-3 font-medium">Email</th>
-                    <th class="px-5 py-3 font-medium">Registro</th>
-                    <th class="px-5 py-3 font-medium">Pedidos</th>
-                    <th class="px-5 py-3 font-medium">Total gastado</th>
-                    <th class="px-5 py-3 font-medium">Acciones</th>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Email</th>
+                    <th>Registro</th>
+                    <th>Pedidos</th>
+                    <th>Total gastado</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-800">
                 {% for u in usuarios %}
-                <tr class="hover:bg-zinc-800/50 transition-colors">
-                    <td class="px-5 py-3">
+                <tr>
+                    <td>
                         <div class="flex items-center gap-3">
                             <div class="w-8 h-8 rounded-full bg-zinc-700 flex items-center justify-center text-xs font-semibold text-white shrink-0">
                                 {{ u.username|first|upper }}
                             </div>
                             <div>
                                 <p class="font-medium">{{ u.get_full_name|default:u.username }}</p>
-                                <p class="text-xs text-zinc-500">@{{ u.username }}</p>
+                                <p class="text-xs theme-text-secondary">@{{ u.username }}</p>
                             </div>
                         </div>
                     </td>
-                    <td class="px-5 py-3 text-zinc-400">{{ u.email|default:"—" }}</td>
-                    <td class="px-5 py-3 text-zinc-400">{{ u.date_joined|date:"d/m/Y" }}</td>
-                    <td class="px-5 py-3">{{ u.pedidos_count }}</td>
-                    <td class="px-5 py-3">${{ u.total_gastado|floatformat:0 }}</td>
-                    <td class="px-5 py-3">
-                        <a href="{% url 'dashboard:usuario_detail' u.id %}" class="text-zinc-400 hover:text-white transition-colors" title="Ver detalle">
+                    <td class="theme-text-secondary">{{ u.email|default:"—" }}</td>
+                    <td class="theme-text-secondary">{{ u.date_joined|date:"d/m/Y" }}</td>
+                    <td>{{ u.pedidos_count }}</td>
+                    <td>${{ u.total_gastado|floatformat:0 }}</td>
+                    <td>
+                        <a href="{% url 'dashboard:usuario_detail' u.id %}" class="theme-text-secondary hover:text-white transition-colors" title="Ver detalle">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -67,7 +67,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="6" class="px-5 py-12 text-center text-zinc-500">No se encontraron usuarios.</td>
+                    <td colspan="6" class="text-center theme-text-secondary py-12">No se encontraron usuarios.</td>
                 </tr>
                 {% endfor %}
             </tbody>

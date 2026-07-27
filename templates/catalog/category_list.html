@@ -5,36 +5,36 @@
 
 {% block content %}
 <section class="w-full px-4 sm:px-6 lg:px-8 py-8">
-    <h1 class="font-['Space_Grotesk'] text-3xl font-bold mb-8">{{ category.name }}</h1>
+    <h1 class="font-heading text-3xl font-bold mb-8">{{ category.name }}</h1>
 
-    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
         {% for product in products %}
-        <a href="{% url 'catalog:product_detail' product.slug %}" class="group overflow-hidden" style="background-color: var(--bg-secondary); border: 1px solid var(--border);">
-            <div class="aspect-[3/4] overflow-hidden">
+        <a href="{% url 'catalog:product_detail' product.slug %}" class="category-card group">
+            <div class="category-card-img-container">
                 {% with main_image=product.images.all|first %}
-                <img src="{% if main_image %}{{ main_image.image.url }}{% else %}{% static 'img/producto-card.jpg' %}{% endif %}" alt="{{ product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <img src="{% if main_image %}{{ main_image.image.url }}{% else %}{% static 'img/producto-card.jpg' %}{% endif %}" alt="{{ product.name }}" class="category-card-img">
                 {% endwith %}
             </div>
-            <div class="p-4 sm:p-6">
-                <h3 class="font-['Space_Grotesk'] font-medium text-base truncate">{{ product.name }}</h3>
-                <p class="text-base mt-1" style="color: var(--accent);">${{ product.price }}</p>
+            <div class="category-card-info">
+                <h3 class="category-card-title">{{ product.name }}</h3>
+                <p class="category-card-price">${{ product.price }}</p>
             </div>
         </a>
         {% empty %}
-        <div class="col-span-full text-center py-12" style="color: var(--text-secondary);">
+        <div class="col-span-full text-center py-12 theme-text-secondary">
             <p>No hay productos en esta categoría.</p>
         </div>
         {% endfor %}
     </div>
 
     {% if is_paginated %}
-    <div class="flex justify-center mt-8 gap-2">
+    <div class="pagination">
         {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-sm" style="border: 1px solid var(--border);">Anterior</a>
+        <a href="?page={{ page_obj.previous_page_number }}" class="page-link">Anterior</a>
         {% endif %}
-        <span class="px-4 py-2 text-sm" style="color: var(--text-secondary);">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        <span class="page-link is-active">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 text-sm" style="border: 1px solid var(--border);">Siguiente</a>
+        <a href="?page={{ page_obj.next_page_number }}" class="page-link">Siguiente</a>
         {% endif %}
     </div>
     {% endif %}

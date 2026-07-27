@@ -4,63 +4,56 @@
 {% block title %}Pedido {{ pedido.numero_pedido }}{% endblock %}
 
 {% block extra_head %}
-<style>
-.badge-pendiente { background-color: #facc15; color: #09090b; }
-.badge-confirmado { background-color: #3b82f6; color: #fafafa; }
-.badge-enviado { background-color: #8b5cf6; color: #fafafa; }
-.badge-entregado { background-color: #22c55e; color: #09090b; }
-.badge-cancelado { background-color: #ef4444; color: #fafafa; }
-</style>
 {% endblock %}
 
 {% block content %}
 <div class="space-y-6">
     <div class="flex items-center justify-between">
         <div>
-            <a href="{% url 'dashboard:pedido_list' %}" class="text-zinc-400 hover:text-zinc-200 text-sm transition-colors">&larr; Volver a pedidos</a>
-            <h1 class="font-['Space_Grotesk'] text-2xl font-bold mt-1">{{ pedido.numero_pedido }}</h1>
+            <a href="{% url 'dashboard:pedido_list' %}" class="theme-text-secondary hover:text-white text-sm transition-colors">&larr; Volver a pedidos</a>
+            <h1 class="font-heading text-2xl font-bold mt-1">{{ pedido.numero_pedido }}</h1>
         </div>
-        <span class="inline-block text-sm font-semibold px-3 py-1 rounded-full badge-{{ pedido.estado }}">{{ pedido.get_estado_display }}</span>
+        <span class="badge badge-{{ pedido.estado }}">{{ pedido.get_estado_display }}</span>
     </div>
 
     {% comment %}Datos del cliente y envío{% endcomment %}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-            <h2 class="font-['Space_Grotesk'] text-sm font-semibold mb-3">Datos del cliente</h2>
+        <div class="theme-bg-secondary border theme-border rounded-xl p-5">
+            <h2 class="font-heading text-sm font-semibold mb-3">Datos del cliente</h2>
             <div class="space-y-2 text-sm">
-                <p><span class="text-zinc-500">Nombre:</span> {{ pedido.nombre_cliente|default:"—" }}</p>
-                <p><span class="text-zinc-500">Teléfono:</span> {{ pedido.telefono|default:"—" }}</p>
+                <p><span class="theme-text-secondary">Nombre:</span> {{ pedido.nombre_cliente|default:"—" }}</p>
+                <p><span class="theme-text-secondary">Teléfono:</span> {{ pedido.telefono|default:"—" }}</p>
                 {% if pedido.usuario_id %}
-                <p><span class="text-zinc-500">Usuario:</span> {{ pedido.usuario.username }}</p>
-                <p><span class="text-zinc-500">Email:</span> {{ pedido.usuario.email|default:"—" }}</p>
+                <p><span class="theme-text-secondary">Usuario:</span> {{ pedido.usuario.username }}</p>
+                <p><span class="theme-text-secondary">Email:</span> {{ pedido.usuario.email|default:"—" }}</p>
                 {% endif %}
             </div>
         </div>
-        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-            <h2 class="font-['Space_Grotesk'] text-sm font-semibold mb-3">Dirección de envío</h2>
+        <div class="theme-bg-secondary border theme-border rounded-xl p-5">
+            <h2 class="font-heading text-sm font-semibold mb-3">Dirección de envío</h2>
             <p class="text-sm">{{ pedido.direccion_envio|default:"—"|linebreaksbr }}</p>
         </div>
     </div>
 
     {% comment %}Productos{% endcomment %}
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-        <div class="p-5 border-b border-zinc-800">
-            <h2 class="font-['Space_Grotesk'] text-sm font-semibold">Productos</h2>
+    <div class="theme-bg-secondary border theme-border rounded-xl overflow-hidden">
+        <div class="p-5 border-b theme-border">
+            <h2 class="font-heading text-sm font-semibold">Productos</h2>
         </div>
-        <table class="w-full text-sm">
+        <table class="dash-table">
             <thead>
-                <tr class="text-zinc-500 text-left">
-                    <th class="px-5 py-3 font-medium">Producto</th>
-                    <th class="px-5 py-3 font-medium">Talla</th>
-                    <th class="px-5 py-3 font-medium">Color</th>
-                    <th class="px-5 py-3 font-medium">Cantidad</th>
-                    <th class="px-5 py-3 font-medium">Precio</th>
-                    <th class="px-5 py-3 font-medium">Subtotal</th>
+                <tr>
+                    <th>Producto</th>
+                    <th>Talla</th>
+                    <th>Color</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-800">
                 {% for item in pedido.items.all %}
-                <tr class="hover:bg-zinc-800/50 transition-colors">
+                <tr>
                     <td class="px-5 py-3">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-12 shrink-0 rounded overflow-hidden bg-zinc-800">
@@ -71,9 +64,9 @@
                             <span>{{ item.producto.name|default:"Producto eliminado" }}</span>
                         </div>
                     </td>
-                    <td class="px-5 py-3 text-zinc-400">{{ item.talla|default:"—" }}</td>
+                    <td class="theme-text-secondary">{{ item.talla|default:"—" }}</td>
                     <td class="px-5 py-3">
-                        <span class="text-zinc-400">{{ item.color|default:"—" }}</span>
+                        <span class="theme-text-secondary">{{ item.color|default:"—" }}</span>
                     </td>
                     <td class="px-5 py-3">{{ item.cantidad }}</td>
                     <td class="px-5 py-3">{% if item.producto %}${{ item.producto.price|floatformat:0 }}{% else %}—{% endif %}</td>
@@ -91,13 +84,13 @@
     </div>
 
     {% comment %}Actualizar estado{% endcomment %}
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-        <h2 class="font-['Space_Grotesk'] text-sm font-semibold mb-3">Actualizar estado</h2>
+    <div class="theme-bg-secondary border theme-border rounded-xl p-5">
+        <h2 class="font-heading text-sm font-semibold mb-3">Actualizar estado</h2>
         <form method="post" class="space-y-4">
             {% csrf_token %}
             <div class="flex flex-wrap items-end gap-4">
                 <div>
-                    <label class="block text-xs text-zinc-500 mb-1">Estado</label>
+                    <label class="block text-xs theme-text-secondary mb-1">Estado</label>
                     <select name="estado" class="bg-zinc-800 border border-zinc-700 text-white text-sm rounded-lg px-3 py-2">
                         {% for key, label in pedido.ESTADO_CHOICES %}
                         <option value="{{ key }}" {% if pedido.estado == key %}selected{% endif %}>{{ label }}</option>
@@ -105,7 +98,7 @@
                     </select>
                 </div>
                 <div id="guiaField" class="{% if pedido.estado != 'enviado' %}hidden{% endif %}">
-                    <label class="block text-xs text-zinc-500 mb-1">Número de guía</label>
+                    <label class="block text-xs theme-text-secondary mb-1">Número de guía</label>
                     <input type="text" name="numero_guia" value="{{ pedido.numero_guia }}" placeholder="KRV-..." class="bg-zinc-800 border border-zinc-700 text-white text-sm rounded-lg px-3 py-2 w-48">
                 </div>
                 <button type="submit" class="bg-zinc-700 hover:bg-zinc-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">

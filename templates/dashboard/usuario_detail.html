@@ -4,94 +4,87 @@
 {% block title %}{{ usuario.get_full_name|default:usuario.username }}{% endblock %}
 
 {% block extra_head %}
-<style>
-.badge-pendiente { background-color: #facc15; color: #09090b; }
-.badge-confirmado { background-color: #3b82f6; color: #fafafa; }
-.badge-enviado { background-color: #8b5cf6; color: #fafafa; }
-.badge-entregado { background-color: #22c55e; color: #09090b; }
-.badge-cancelado { background-color: #ef4444; color: #fafafa; }
-</style>
 {% endblock %}
 
 {% block content %}
 <div class="space-y-6">
-    <a href="{% url 'dashboard:usuario_list' %}" class="text-zinc-400 hover:text-zinc-200 text-sm transition-colors">&larr; Volver a usuarios</a>
+    <a href="{% url 'dashboard:usuario_list' %}" class="theme-text-secondary hover:text-white text-sm transition-colors">&larr; Volver a usuarios</a>
 
     {% comment %}Perfil{% endcomment %}
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
+    <div class="theme-bg-secondary border theme-border rounded-xl p-6">
         <div class="flex items-center gap-5">
             <div class="w-16 h-16 rounded-full bg-zinc-700 flex items-center justify-center text-2xl font-bold text-white shrink-0">
                 {{ usuario.username|first|upper }}
             </div>
             <div class="flex-1">
-                <h1 class="font-['Space_Grotesk'] text-2xl font-bold">{{ usuario.get_full_name|default:usuario.username }}</h1>
-                <p class="text-sm text-zinc-400">@{{ usuario.username }} &middot; {{ usuario.email|default:"Sin email" }}</p>
-                <p class="text-xs text-zinc-500 mt-1">Registrado el {{ usuario.date_joined|date:"d F Y" }}</p>
+                <h1 class="font-heading text-2xl font-bold">{{ usuario.get_full_name|default:usuario.username }}</h1>
+                <p class="text-sm theme-text-secondary">@{{ usuario.username }} &middot; {{ usuario.email|default:"Sin email" }}</p>
+                <p class="text-xs theme-text-secondary mt-1">Registrado el {{ usuario.date_joined|date:"d F Y" }}</p>
             </div>
             <div class="text-right">
                 <p class="text-2xl font-bold">${{ total_gastado|floatformat:0 }}</p>
-                <p class="text-xs text-zinc-500">gastado en total</p>
+                <p class="text-xs theme-text-secondary">gastado en total</p>
             </div>
         </div>
     </div>
 
     {% comment %}Stats{% endcomment %}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-            <p class="text-xs text-zinc-500 uppercase tracking-widest">Total pedidos</p>
-            <p class="font-['Space_Grotesk'] text-xl font-bold mt-1">{{ pedidos|length }}</p>
+        <div class="theme-bg-secondary border theme-border rounded-xl p-4">
+            <p class="text-xs theme-text-secondary uppercase tracking-widest">Total pedidos</p>
+            <p class="font-heading text-xl font-bold mt-1">{{ pedidos|length }}</p>
         </div>
-        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-            <p class="text-xs text-zinc-500 uppercase tracking-widest">Primer pedido</p>
-            <p class="font-['Space_Grotesk'] text-sm font-bold mt-1">{{ primer_pedido|date:"d/m/Y"|default:"—" }}</p>
+        <div class="theme-bg-secondary border theme-border rounded-xl p-4">
+            <p class="text-xs theme-text-secondary uppercase tracking-widest">Primer pedido</p>
+            <p class="font-heading text-sm font-bold mt-1">{{ primer_pedido|date:"d/m/Y"|default:"—" }}</p>
         </div>
-        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
-            <p class="text-xs text-zinc-500 uppercase tracking-widest">Último pedido</p>
-            <p class="font-['Space_Grotesk'] text-sm font-bold mt-1">{{ ultimo_pedido|date:"d/m/Y"|default:"—" }}</p>
+        <div class="theme-bg-secondary border theme-border rounded-xl p-4">
+            <p class="text-xs theme-text-secondary uppercase tracking-widest">Último pedido</p>
+            <p class="font-heading text-sm font-bold mt-1">{{ ultimo_pedido|date:"d/m/Y"|default:"—" }}</p>
         </div>
     </div>
 
     {% comment %}Historial de pedidos{% endcomment %}
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-        <div class="p-5 border-b border-zinc-800">
-            <h2 class="font-['Space_Grotesk'] text-sm font-semibold">Historial de pedidos</h2>
+    <div class="theme-bg-secondary border theme-border rounded-xl overflow-hidden">
+        <div class="p-5 border-b theme-border">
+            <h2 class="font-heading text-sm font-semibold">Historial de pedidos</h2>
         </div>
         {% if pedidos %}
-        <table class="w-full text-sm">
+        <table class="dash-table">
             <thead>
-                <tr class="text-zinc-500 text-left">
-                    <th class="px-5 py-3 font-medium"># Pedido</th>
-                    <th class="px-5 py-3 font-medium">Fecha</th>
-                    <th class="px-5 py-3 font-medium">Estado</th>
-                    <th class="px-5 py-3 font-medium">Total</th>
-                    <th class="px-5 py-3 font-medium"></th>
+                <tr>
+                    <th># Pedido</th>
+                    <th>Fecha</th>
+                    <th>Estado</th>
+                    <th>Total</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-zinc-800">
                 {% for p in pedidos %}
-                <tr class="hover:bg-zinc-800/50 transition-colors">
-                    <td class="px-5 py-3 font-mono text-xs">{{ p.numero_pedido }}</td>
-                    <td class="px-5 py-3 text-zinc-400">{{ p.creado_en|date:"d/m/Y" }}</td>
-                    <td class="px-5 py-3">
-                        <span class="inline-block text-xs font-semibold px-2.5 py-0.5 rounded-full badge-{{ p.estado }}">{{ p.get_estado_display }}</span>
+                <tr>
+                    <td class="font-mono text-xs">{{ p.numero_pedido }}</td>
+                    <td class="theme-text-secondary">{{ p.creado_en|date:"d/m/Y" }}</td>
+                    <td>
+                        <span class="badge badge-{{ p.estado }}">{{ p.get_estado_display }}</span>
                     </td>
-                    <td class="px-5 py-3">${{ p.total|floatformat:0 }}</td>
-                    <td class="px-5 py-3">
-                        <a href="{% url 'dashboard:pedido_detail' p.id %}" class="text-zinc-400 hover:text-white transition-colors text-xs">Ver</a>
+                    <td>${{ p.total|floatformat:0 }}</td>
+                    <td>
+                        <a href="{% url 'dashboard:pedido_detail' p.id %}" class="theme-text-secondary hover:text-white transition-colors text-xs">Ver</a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
         {% else %}
-        <div class="p-8 text-center text-zinc-500">Este usuario no ha realizado pedidos.</div>
+        <div class="p-8 text-center theme-text-secondary">Este usuario no ha realizado pedidos.</div>
         {% endif %}
     </div>
 
     {% comment %}Eliminar usuario{% endcomment %}
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-        <h2 class="font-['Space_Grotesk'] text-sm font-semibold text-red-400 mb-2">Zona de peligro</h2>
-        <p class="text-sm text-zinc-500 mb-4">
+    <div class="theme-bg-secondary border theme-border rounded-xl p-5">
+        <h2 class="font-heading text-sm font-semibold text-red-400 mb-2">Zona de peligro</h2>
+        <p class="text-sm theme-text-secondary mb-4">
             {% if tiene_pedidos_activos %}
             No se puede eliminar este usuario porque tiene pedidos activos (pendientes, confirmados o enviados).
             {% else %}

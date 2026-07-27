@@ -9,60 +9,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/output.css' %}">
-    {% comment %}Variables CSS para modo oscuro/claro{% endcomment %}
-    <style>
-        :root {
-            --bg-primary: #09090b;
-            --bg-secondary: #18181b;
-            --border: #27272a;
-            --text-primary: #fafafa;
-            --text-secondary: #a1a1aa;
-            --accent: #fafafa;
-        }
-        [data-theme="light"] {
-            --bg-primary: #fafafa;
-            --bg-secondary: #f4f4f5;
-            --border: #e4e4e7;
-            --text-primary: #09090b;
-            --text-secondary: #71717a;
-            --accent: #09090b;
-        }
-        [data-theme="dark"] {
-            --bg-primary: #09090b;
-            --bg-secondary: #18181b;
-            --border: #27272a;
-            --text-primary: #fafafa;
-            --text-secondary: #a1a1aa;
-            --accent: #fafafa;
-        }
-        body {
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-        }
-        .theme-border { border-color: var(--border); }
-        .theme-bg-secondary { background-color: var(--bg-secondary); }
-        .theme-text-secondary { color: var(--text-secondary); }
-        .theme-accent { color: var(--accent); }
-        .theme-accent-bg { background-color: var(--accent); color: var(--bg-primary); }
-        .theme-hover:hover { color: var(--accent); }
-        .aspect-ratio-3-4 { aspect-ratio: 3 / 4; }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/storefront.css' %}">
+    {% comment %}Variables CSS para modo oscuro/claro movidas a base.css{% endcomment %}
+
     {% block extra_head %}{% endblock %}
 </head>
-<body class="font-['Inter'] antialiased">
-    <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-3 items-center pointer-events-none w-full max-w-md px-4">
+<body class="">
+    <div id="toast-container" class="toast-container">
         {% if messages %}
         {% for message in messages %}
-        <div class="toast-message rounded-lg px-4 py-3 text-sm font-medium shadow-lg transition-all duration-300 {% if message.tags == 'success' %}bg-emerald-950 border border-emerald-800 text-emerald-400{% elif message.tags == 'error' %}bg-red-950 border border-red-800 text-red-400{% else %}bg-zinc-800 border border-zinc-700 text-zinc-300{% endif %}">
+        <div class="toast-message {% if message.tags == 'success' %}toast-success{% elif message.tags == 'error' %}toast-error{% else %}toast-info{% endif %}">
             {{ message }}
         </div>
         {% endfor %}
         {% endif %}
     </div>
-    <nav class="sticky top-0 z-20 border-b theme-border" style="border-color: var(--border); background-color: var(--bg-primary);">
+    <nav class="navbar">
         <div class="w-full">
-            <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
+            <div class="navbar-inner">
                 <div class="flex items-center gap-4">
                     {% comment %}Botón para abrir menú lateral{% endcomment %}
                     <button id="sidebarToggle" class="p-2 theme-text-secondary hover:opacity-80 transition-opacity">
@@ -71,7 +36,7 @@
                         </svg>
                     </button>
                 </div>
-                <a href="{% url 'home' %}" class="absolute left-1/2 -translate-x-1/2 block">
+                <a href="{% url 'home' %}" class="navbar-logo">
                     <img id="logoIcon" src="{% static 'img/logo_negativo.png' %}" alt="KUROVOID" class="h-12 w-12 object-cover cursor-pointer">
                 </a>
                 <div class="flex items-center gap-6">
@@ -101,9 +66,9 @@
     </nav>
 
     {% comment %}Panel lateral expandible (filtros + navegación){% endcomment %}
-    <div id="sidebar" class="fixed top-0 left-0 h-full w-80 z-40 transform -translate-x-full transition-transform duration-300 overflow-y-auto shadow-2xl" style="background-color: var(--bg-secondary); border-right: 1px solid var(--border);">
+    <div id="sidebar" class="sidebar">
         {% comment %}Header con logo y cerrar{% endcomment %}
-        <div class="sticky top-0 z-10 flex items-center justify-between p-6" style="background-color: var(--bg-secondary); border-bottom: 1px solid var(--border);">
+        <div class="sidebar-header">
             <a href="{% url 'home' %}">
                 <img id="logoImg" src="{% static 'img/tipografia_kurovoid_negativa.png' %}" alt="KUROVOID" class="h-10 w-auto">
             </a>
@@ -193,15 +158,15 @@
 
     </div>
 
-    <div id="sidebarOverlay" class="fixed inset-0 z-30 bg-black/50 opacity-0 pointer-events-none transition-opacity duration-300"></div>
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
 
     <main class="min-h-screen">
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="border-t py-8" style="border-color: var(--border); background-color: var(--bg-primary);" role="contentinfo">
+    <footer class="footer" role="contentinfo">
         <div class="px-4 sm:px-8 lg:px-12">
-            <div class="grid grid-cols-1 sm:grid-cols-3 items-center gap-6 text-sm" style="color: var(--text-secondary);">
+            <div class="footer-grid">
                 
                 <div class="text-left">
                     &copy; {% now "Y" %} Kurovoid. All Rights Reserved.
@@ -248,13 +213,13 @@
         const closeBtn = document.getElementById('sidebarClose');
 
         function openSidebar() {
-            sidebar.classList.remove('-translate-x-full');
-            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            sidebar.classList.add('sidebar-open');
+            overlay.classList.add('overlay-visible');
             document.body.style.overflow = 'hidden';
         }
         function closeSidebar() {
-            sidebar.classList.add('-translate-x-full');
-            overlay.classList.add('opacity-0', 'pointer-events-none');
+            sidebar.classList.remove('sidebar-open');
+            overlay.classList.remove('overlay-visible');
             document.body.style.overflow = '';
         }
         const filterBtn = document.getElementById('filterToggle');
@@ -359,7 +324,7 @@
             // Auto-hide existing django messages
             document.querySelectorAll('.toast-message').forEach(toast => {
                 setTimeout(() => {
-                    toast.classList.add('opacity-0', '-translate-y-4');
+                    toast.classList.add('toast-hidden');
                     setTimeout(() => toast.remove(), 300);
                 }, 3000);
             });
@@ -369,13 +334,13 @@
             const container = document.getElementById('toast-container');
             if(!container) return;
             const toast = document.createElement('div');
-            let classes = 'toast-message rounded-lg px-4 py-3 text-sm font-medium shadow-lg transition-all duration-300 -translate-y-4 opacity-0 pointer-events-auto ';
+            let classes = 'toast-message toast-hidden ';
             if (type === 'success') {
-                classes += 'bg-emerald-950 border border-emerald-800 text-emerald-400';
+                classes += 'toast-success';
             } else if (type === 'error') {
-                classes += 'bg-red-950 border border-red-800 text-red-400';
+                classes += 'toast-error';
             } else {
-                classes += 'bg-zinc-800 border border-zinc-700 text-zinc-300';
+                classes += 'toast-info';
             }
             toast.className = classes;
             toast.textContent = message;
@@ -383,11 +348,11 @@
             
             // Trigger animation
             requestAnimationFrame(() => {
-                toast.classList.remove('-translate-y-4', 'opacity-0');
+                toast.classList.remove('toast-hidden');
             });
             
             setTimeout(() => {
-                toast.classList.add('opacity-0', '-translate-y-4');
+                toast.classList.add('toast-hidden');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }

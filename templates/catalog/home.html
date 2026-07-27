@@ -6,49 +6,43 @@
 {% block content %}
 
 {% comment %}Hero slider{% endcomment %}
-<section class="relative h-[70vh] min-h-[500px] flex items-center justify-center overflow-hidden" style="background-color: var(--bg-secondary);">
-    <div id="heroCarousel" class="absolute inset-0 flex transition-transform duration-1000 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]">
+<section class="hero-section">
+    <div id="heroCarousel" class="hero-carousel">
         {% for img in carousel_images %}
-        <div class="hero-slide w-full h-full shrink-0" style="background-color: var(--bg-secondary);">
+        <div class="hero-slide">
             {% if img.link %}<a href="{{ img.link }}" class="block w-full h-full">{% endif %}
-            <img src="{{ img.image.url }}" alt="{{ img.title }}" class="w-full h-full object-cover transition-transform duration-[8s] ease-out">
+            <img src="{{ img.image.url }}" alt="{{ img.title }}">
             {% if img.link %}</a>{% endif %}
         </div>
         {% empty %}
-        <div class="hero-slide w-full h-full shrink-0 flex items-center justify-center" style="background-color: var(--bg-secondary);">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32 opacity-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="color: var(--text-primary);">
+        <div class="hero-slide flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="size-32 opacity-10 theme-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
         </div>
         {% endfor %}
     </div>
-    <button id="heroPrev" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 p-2 text-white/60 hover:text-white transition-colors duration-300" aria-label="Anterior">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+    <button id="heroPrev" class="hero-btn hero-btn-prev" aria-label="Anterior">
+        <svg xmlns="http://www.w3.org/2000/svg" class="size-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
     </button>
-    <button id="heroNext" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 p-2 text-white/60 hover:text-white transition-colors duration-300" aria-label="Siguiente">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
+    <button id="heroNext" class="hero-btn hero-btn-next" aria-label="Siguiente">
+        <svg xmlns="http://www.w3.org/2000/svg" class="size-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
     </button>
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+    <div class="hero-dots-container">
         {% for img in carousel_images %}
-        <button class="hero-dot w-8 h-1.5 rounded-full transition-all duration-500 {% if forloop.first %}bg-white{% else %}bg-zinc-600{% endif %}" data-index="{{ forloop.counter0 }}" aria-label="Slide {{ forloop.counter }}"></button>
+        <button class="hero-dot {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.counter0 }}" aria-label="Slide {{ forloop.counter }}"></button>
         {% empty %}
-        <button class="hero-dot w-8 h-1.5 rounded-full transition-all duration-500 bg-white" data-index="0" aria-label="Slide 1"></button>
+        <button class="hero-dot is-active" data-index="0" aria-label="Slide 1"></button>
         {% endfor %}
     </div>
-    <div class="relative z-10 text-center px-4">
-        <style>
-            .theme-logo-black { display: none; }
-            [data-theme="light"] .theme-logo-white { display: none; }
-            [data-theme="light"] .theme-logo-black { display: inline-block; }
-        </style>
-        <img src="{% static 'img/tipografia_kurovoid_negativa.png' %}" alt="KUROVOID" class="theme-logo-white mx-auto object-contain w-auto" style="height: clamp(3rem, 8vw, 5rem);">
-        <img src="{% static 'img/tipografia_kurovoid.png' %}" alt="KUROVOID" class="theme-logo-black mx-auto object-contain w-auto" style="height: clamp(3rem, 8vw, 5rem);">
-        <p class="mt-4 text-lg sm:text-xl max-w-lg mx-auto" style="color: var(--text-secondary);">Ropa con identidad. Hecha para los que rompen el molde.</p>
-        <div class="mt-8 flex items-center justify-center gap-4">
-            <a href="{% url 'catalog:product_list' %}" class="inline-block px-8 py-3 text-sm font-medium tracking-wider theme-accent-bg transition-opacity hover:opacity-80">
+    <div class="hero-content">
+        <img src="{% static 'img/tipografia_kurovoid_negativa.png' %}" alt="KUROVOID" class="theme-logo-white hero-logo">
+        <img src="{% static 'img/tipografia_kurovoid.png' %}" alt="KUROVOID" class="theme-logo-black hero-logo">
+        <p class="hero-subtitle">Ropa con identidad. Hecha para los que rompen el molde.</p>
+        <div class="hero-cta-container">
+            <a href="{% url 'catalog:product_list' %}" class="btn-primary btn-primary-large">
                 VER COLECCIÓN
             </a>
-
         </div>
     </div>
 </section>
@@ -67,14 +61,10 @@
     function goTo(index) {
         if (index === current) return;
         carousel.style.transform = 'translateX(-' + (index * 100) + '%)';
-        slides.forEach(s => s.querySelector('img')?.classList.remove('scale-105'));
-        slides[index].querySelector('img')?.classList.add('scale-105');
-        dots.forEach(d => {
-            d.classList.remove('bg-white');
-            d.classList.add('bg-zinc-600');
-        });
-        dots[index].classList.remove('bg-zinc-600');
-        dots[index].classList.add('bg-white');
+        slides.forEach(s => s.classList.remove('is-active'));
+        slides[index].classList.add('is-active');
+        dots.forEach(d => d.classList.remove('is-active'));
+        dots[index].classList.add('is-active');
         current = index;
     }
 
@@ -101,7 +91,7 @@
     section?.addEventListener('mouseenter', stopAutoplay);
     section?.addEventListener('mouseleave', startAutoplay);
 
-    slides[0]?.querySelector('img')?.classList.add('scale-105');
+    slides[0]?.classList.add('is-active');
     startAutoplay();
 })();
 </script>
@@ -109,38 +99,38 @@
 
 
 {% comment %}New In{% endcomment %}
-<section class="py-16 px-4" style="background-color: var(--bg-secondary);">
+<section class="py-16 px-4 theme-bg-secondary">
     <div class="w-full px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between mb-8">
-            <h2 class="font-['Space_Grotesk'] text-2xl font-bold">Nuevos Ingresos</h2>
-            <a href="{% url 'catalog:product_list' %}" class="text-sm tracking-wider transition-opacity hover:opacity-80" style="color: var(--accent);">VER TODO →</a>
+            <h2 class="font-heading text-2xl font-bold">Nuevos Ingresos</h2>
+            <a href="{% url 'catalog:product_list' %}" class="text-sm tracking-wider theme-accent hover:opacity-80 transition-opacity">VER TODO →</a>
         </div>
         {% if new_products %}
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
             {% for product in new_products %}
-            <div class="group relative overflow-hidden" style="background-color: var(--bg-primary); border: 1px solid var(--border);">
-                <button onclick="toggleFav({{ product.id }}, this); event.stopPropagation();" class="fav-btn absolute top-3 right-3 z-10 p-1.5 rounded-full transition-all duration-200" style="background-color: rgba(0,0,0,0.4);" data-product-id="{{ product.id }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-white" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+            <div class="product-card group">
+                <button onclick="toggleFav({{ product.id }}, this); event.stopPropagation();" class="fav-btn product-card-fav-btn new-in-fav-btn" data-product-id="{{ product.id }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                     </svg>
                 </button>
                 <a href="{% url 'catalog:product_detail' product.slug %}" class="block">
-                    <div class="aspect-ratio-3-4 overflow-hidden">
+                    <div class="product-card-img-container">
                         {% with main_image=product.images.all|first %}
-                        <img src="{% if main_image %}{{ main_image.image.url }}{% else %}{% static 'img/producto-card.jpg' %}{% endif %}" alt="{{ main_image.alt_text|default:product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <img src="{% if main_image %}{{ main_image.image.url }}{% else %}{% static 'img/producto-card.jpg' %}{% endif %}" alt="{{ main_image.alt_text|default:product.name }}" class="product-card-img">
                         {% endwith %}
                     </div>
-                    <div class="p-4 sm:p-6">
-                        <p class="text-xs tracking-widest uppercase" style="color: var(--text-secondary);">NEW IN</p>
-                        <h3 class="font-['Space_Grotesk'] font-medium text-base mt-1 truncate">{{ product.name }}</h3>
-                        <p class="text-base mt-1">${{ product.price }}</p>
+                    <div class="new-in-info">
+                        <p class="new-in-label">NEW IN</p>
+                        <h3 class="product-card-title new-in-title">{{ product.name }}</h3>
+                        <p class="new-in-price">${{ product.price }}</p>
                     </div>
                 </a>
             </div>
             {% endfor %}
         </div>
         {% else %}
-        <div class="text-center py-12" style="color: var(--text-secondary);">
+        <div class="text-center py-12 theme-text-secondary">
             <p>Próximamente nuevos productos.</p>
         </div>
         {% endif %}
@@ -150,43 +140,42 @@
 {% comment %}Valores de marca{% endcomment %}
 <section class="py-20 px-4">
     <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="font-['Space_Grotesk'] text-2xl font-bold mb-12">Hecho con propósito</h2>
+        <h2 class="font-heading text-2xl font-bold mb-12">Hecho con propósito</h2>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            <div class="p-6 rounded-2xl shadow-lg shadow-black/20" style="border: 1px solid var(--border);">
-                <div class="w-12 h-12 mx-auto mb-4 flex items-center justify-center rounded-lg" style="background-color: var(--bg-secondary);">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
+            <div class="value-card">
+                <div class="value-icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-6 theme-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
                 </div>
-                <h3 class="font-['Space_Grotesk'] font-semibold text-sm tracking-wider mb-2">CALIDAD GARANTIZADA</h3>
-                <p class="text-sm" style="color: var(--text-secondary);">Materiales premium y confección cuidadosa en cada prenda.</p>
+                <h3 class="value-title">CALIDAD GARANTIZADA</h3>
+                <p class="value-desc">Materiales premium y confección cuidadosa en cada prenda.</p>
             </div>
-            <div class="p-6 rounded-2xl shadow-lg shadow-black/20" style="border: 1px solid var(--border);">
-                <div class="w-12 h-12 mx-auto mb-4 flex items-center justify-center rounded-lg" style="background-color: var(--bg-secondary);">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <div class="value-card">
+                <div class="value-icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-6 theme-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </div>
-                <h3 class="font-['Space_Grotesk'] font-semibold text-sm tracking-wider mb-2">ENVÍO RÁPIDO</h3>
-                <p class="text-sm" style="color: var(--text-secondary);">Entregas en 24-48 horas en todo el país.</p>
+                <h3 class="value-title">ENVÍO RÁPIDO</h3>
+                <p class="value-desc">Entregas en 24-48 horas en todo el país.</p>
             </div>
-            <div class="p-6 rounded-2xl shadow-lg shadow-black/20" style="border: 1px solid var(--border);">
-                <div class="w-12 h-12 mx-auto mb-4 flex items-center justify-center rounded-lg" style="background-color: var(--bg-secondary);">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+            <div class="value-card">
+                <div class="value-icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-6 theme-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
                 </div>
-                <h3 class="font-['Space_Grotesk'] font-semibold text-sm tracking-wider mb-2">ATENCIÓN PERSONALIZADA</h3>
-                <p class="text-sm" style="color: var(--text-secondary);">Soporte directo para cambios, devoluciones y dudas.</p>
+                <h3 class="value-title">ATENCIÓN PERSONALIZADA</h3>
+                <p class="value-desc">Soporte directo para cambios, devoluciones y dudas.</p>
             </div>
         </div>
     </div>
 </section>
 
 {% comment %}CTA final{% endcomment %}
-<section class="py-20 px-4 text-center" style="background-color: var(--bg-secondary);">
+<section class="py-20 px-4 text-center theme-bg-secondary">
     <div class="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="font-['Space_Grotesk'] text-3xl sm:text-4xl font-bold mb-4">¿Listo para tu próximo look?</h2>
-        <p class="mb-8" style="color: var(--text-secondary);">Explora nuestra colección y encuentra tu estilo.</p>
+        <h2 class="font-heading text-3xl sm:text-4xl font-bold mb-4">¿Listo para tu próximo look?</h2>
+        <p class="mb-8 theme-text-secondary">Explora nuestra colección y encuentra tu estilo.</p>
         <div class="flex items-center justify-center gap-4 flex-wrap">
-            <a href="{% url 'catalog:product_list' %}" class="inline-block px-10 py-3 text-sm font-medium tracking-wider theme-accent-bg transition-opacity hover:opacity-80">
+            <a href="{% url 'catalog:product_list' %}" class="btn-primary btn-primary-large">
                 IR A LA TIENDA
             </a>
-
         </div>
     </div>
 </section>

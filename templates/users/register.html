@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es" class="bg-zinc-950">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,21 +8,22 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/output.css' %}">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/storefront.css' %}">
 </head>
-<body class="bg-zinc-950 min-h-screen flex items-center justify-center px-4 font-['Inter']">
-    <div class="w-full max-w-96">
-        <div class="text-center mb-10">
-            <img src="{% static 'img/tipografia_kurovoid_negativa.png' %}" alt="KUROVOID" class="h-8 w-auto mx-auto">
-            <p class="text-zinc-500 text-sm mt-3 tracking-wide">Crear una cuenta</p>
+<body class="auth-page">
+    <div class="auth-container">
+        <div class="auth-header">
+            <img src="{% static 'img/tipografia_kurovoid_negativa.png' %}" alt="KUROVOID" class="auth-logo">
+            <p class="auth-subtitle">Crear una cuenta</p>
         </div>
 
-        <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-10">
+        <div class="auth-card">
             <form method="post">
                 {% csrf_token %}
 
                 {% if form.errors %}
-                <div class="bg-red-950 border border-red-800 text-red-400 rounded-lg p-3 text-sm mb-6">
+                <div class="auth-error-box" style="text-align: left;">
                     {% for field, errors in form.errors.items %}
                         {% for error in errors %}
                         <p>{{ error }}</p>
@@ -31,23 +32,23 @@
                 </div>
                 {% endif %}
 
-                <div class="relative mb-4">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+                <div class="auth-input-group">
+                    <span class="auth-input-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                         </svg>
                     </span>
-                    <input type="text" name="username" id="id_username" required placeholder="Usuario" class="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg pl-12 pr-4 py-3 text-sm placeholder-zinc-500 focus:outline-none focus:border-white transition-colors">
+                    <input type="text" name="username" id="id_username" required placeholder="Usuario" class="auth-input">
                 </div>
 
-                <div class="relative mb-4">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+                <div class="auth-input-group">
+                    <span class="auth-input-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                         </svg>
                     </span>
-                    <input type="password" name="password1" id="id_password1" required placeholder="Contraseña" class="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg pl-12 pr-12 py-3 text-sm placeholder-zinc-500 focus:outline-none focus:border-white transition-colors">
-                    <button type="button" class="toggle-password absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors" data-target="id_password1">
+                    <input type="password" name="password1" id="id_password1" required placeholder="Contraseña" class="auth-input auth-input-password">
+                    <button type="button" class="toggle-password auth-btn-toggle" data-target="id_password1">
                         <svg class="eye-icon h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -55,14 +56,14 @@
                     </button>
                 </div>
 
-                <div class="relative mb-6">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500">
+                <div class="auth-input-group">
+                    <span class="auth-input-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                         </svg>
                     </span>
-                    <input type="password" name="password2" id="id_password2" required placeholder="Confirmar contraseña" class="w-full bg-zinc-800 border border-zinc-700 text-white rounded-lg pl-12 pr-12 py-3 text-sm placeholder-zinc-500 focus:outline-none focus:border-white transition-colors">
-                    <button type="button" class="toggle-password absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors" data-target="id_password2">
+                    <input type="password" name="password2" id="id_password2" required placeholder="Confirmar contraseña" class="auth-input auth-input-password">
+                    <button type="button" class="toggle-password auth-btn-toggle" data-target="id_password2">
                         <svg class="eye-icon h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -70,18 +71,18 @@
                     </button>
                 </div>
 
-                <button type="submit" class="w-full bg-white text-black font-semibold rounded-lg py-3 text-sm hover:bg-zinc-100 transition-all">
+                <button type="submit" class="auth-btn-submit">
                     Crear cuenta
                 </button>
             </form>
 
-            <p class="text-zinc-500 text-sm text-center mt-6">
+            <p class="auth-footer-link">
                 ¿Ya tienes cuenta?
-                <a href="{% url 'users:login' %}" class="text-white hover:underline">Inicia sesión</a>
+                <a href="{% url 'users:login' %}">Inicia sesión</a>
             </p>
         </div>
 
-        <p class="text-zinc-700 text-xs text-center mt-8">KUROVOID &copy; {% now "Y" %} &mdash; v1.0</p>
+        <p class="auth-copyright">KUROVOID &copy; {% now "Y" %} &mdash; v1.0</p>
     </div>
 
     <script>

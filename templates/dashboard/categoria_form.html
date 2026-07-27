@@ -10,7 +10,7 @@
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
       </svg>
     </a>
-    <h1 class="text-2xl font-bold text-white text-center">{% if editing %}Editar{% else %}Nueva{% endif %} Categoría</h1>
+    <h1 class="font-heading text-2xl font-bold text-center">{% if editing %}Editar{% else %}Nueva{% endif %} Categoría</h1>
   </div>
 
   <form method="post" enctype="multipart/form-data" class="space-y-5">
@@ -21,7 +21,7 @@
     {% endfor %}
 
     <div>
-      <label class="block text-zinc-300 text-sm font-medium mb-1.5">{{ form.name.label }}</label>
+      <label class="dash-label">{{ form.name.label }}</label>
       {{ form.name }}
       {% if form.name.errors %}
       <p class="mt-1 text-xs text-red-400">{{ form.name.errors.0 }}</p>
@@ -29,24 +29,24 @@
     </div>
 
     <div>
-      <label class="block text-zinc-300 text-sm font-medium mb-1.5">{{ form.slug.label }}</label>
+      <label class="dash-label">{{ form.slug.label }}</label>
       {{ form.slug }}
-      <p class="mt-1 text-xs text-zinc-500">Se genera automáticamente desde el nombre.</p>
+      <p class="mt-1 text-xs theme-text-secondary">Se genera automáticamente desde el nombre.</p>
       {% if form.slug.errors %}
       <p class="mt-1 text-xs text-red-400">{{ form.slug.errors.0 }}</p>
       {% endif %}
     </div>
 
     <div>
-      <label class="block text-zinc-300 text-sm font-medium mb-1.5">{{ form.description.label }}</label>
+      <label class="dash-label">{{ form.description.label }}</label>
       {{ form.description }}
     </div>
 
     <div>
-      <label class="block text-zinc-300 text-sm font-medium mb-1.5">{{ form.image.label }}</label>
+      <label class="dash-label">{{ form.image.label }}</label>
       {% if form.instance.image %}
       <div class="mb-2">
-        <img src="{{ form.instance.image.url }}" alt="Preview" class="w-24 h-24 rounded-lg object-cover bg-zinc-800">
+        <img src="{{ form.instance.image.url }}" alt="Preview" class="w-24 h-24 rounded-lg object-cover theme-bg-secondary">
       </div>
       {% endif %}
       {{ form.image }}
@@ -54,14 +54,14 @@
 
     <div class="flex items-center gap-2">
       {{ form.is_active }}
-      <label class="text-zinc-300 text-sm font-medium">{{ form.is_active.label }}</label>
+      <label class="dash-label mb-0">{{ form.is_active.label }}</label>
     </div>
 
     <div class="flex items-center gap-3 pt-2">
-      <button type="submit" class="px-6 py-2 bg-white text-zinc-900 rounded-lg text-sm font-medium hover:bg-zinc-200 transition-colors">
+      <button type="submit" class="px-6 py-2 theme-accent-bg rounded-lg text-sm font-medium hover:opacity-80 transition-opacity">
         {% if editing %}Guardar cambios{% else %}Crear categoría{% endif %}
       </button>
-      <a href="{% url 'dashboard:categoria_list' %}" class="px-4 py-2 text-zinc-400 hover:text-white transition-colors text-sm">Cancelar</a>
+      <a href="{% url 'dashboard:categoria_list' %}" class="px-4 py-2 theme-text-secondary hover:text-white transition-colors text-sm">Cancelar</a>
     </div>
   </form>
 </div>

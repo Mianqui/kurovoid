@@ -5,37 +5,37 @@
 
 {% block content %}
 <div class="space-y-6">
-    <h1 class="font-['Space_Grotesk'] text-2xl font-bold">Ventas</h1>
+    <h1 class="font-heading text-2xl font-bold">Ventas</h1>
 
     {% comment %}Cards de resumen{% endcomment %}
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-            <p class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Ventas del mes</p>
-            <p class="font-['Space_Grotesk'] text-2xl font-bold">${{ ventas_mes_actual|floatformat:0 }}</p>
+        <div class="theme-bg-secondary border theme-border rounded-xl p-5">
+            <p class="text-xs theme-text-secondary uppercase tracking-widest mb-1">Ventas del mes</p>
+            <p class="font-heading text-2xl font-bold">${{ ventas_mes_actual|floatformat:0 }}</p>
             <p class="text-xs mt-1 {% if cambio_positivo %}text-emerald-400{% else %}text-red-400{% endif %}">
                 {% if cambio_positivo %}↑{% else %}↓{% endif %} {{ cambio_pct }}% vs mes anterior
             </p>
         </div>
-        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-            <p class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Pedidos completados</p>
-            <p class="font-['Space_Grotesk'] text-2xl font-bold">{{ pedidos_completados }}</p>
-            <p class="text-xs mt-1 text-zinc-500">este mes</p>
+        <div class="theme-bg-secondary border theme-border rounded-xl p-5">
+            <p class="text-xs theme-text-secondary uppercase tracking-widest mb-1">Pedidos completados</p>
+            <p class="font-heading text-2xl font-bold">{{ pedidos_completados }}</p>
+            <p class="text-xs mt-1 theme-text-secondary">este mes</p>
         </div>
-        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-            <p class="text-xs text-zinc-500 uppercase tracking-widest mb-1">Ticket promedio</p>
-            <p class="font-['Space_Grotesk'] text-2xl font-bold">${{ ticket_promedio|floatformat:0 }}</p>
-            <p class="text-xs mt-1 text-zinc-500">últimos 30 días</p>
+        <div class="theme-bg-secondary border theme-border rounded-xl p-5">
+            <p class="text-xs theme-text-secondary uppercase tracking-widest mb-1">Ticket promedio</p>
+            <p class="font-heading text-2xl font-bold">${{ ticket_promedio|floatformat:0 }}</p>
+            <p class="text-xs mt-1 theme-text-secondary">últimos 30 días</p>
         </div>
     </div>
 
     {% comment %}Gráficas{% endcomment %}
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-            <h2 class="font-['Space_Grotesk'] text-sm font-semibold mb-4">Ingresos (últimos 30 días)</h2>
+        <div class="theme-bg-secondary border theme-border rounded-xl p-5">
+            <h2 class="font-heading text-sm font-semibold mb-4">Ingresos (últimos 30 días)</h2>
             <canvas id="lineChart"></canvas>
         </div>
-        <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-5">
-            <h2 class="font-['Space_Grotesk'] text-sm font-semibold mb-4">Pedidos por estado</h2>
+        <div class="theme-bg-secondary border theme-border rounded-xl p-5">
+            <h2 class="font-heading text-sm font-semibold mb-4">Pedidos por estado</h2>
             <canvas id="barChart"></canvas>
         </div>
     </div>

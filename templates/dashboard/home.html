@@ -4,42 +4,42 @@
 {% block title %}Panel{% endblock %}
 
 {% block content %}
-<h1 class="font-['Space_Grotesk'] text-2xl font-bold mb-8">Panel de control</h1>
+<h1 class="font-heading text-2xl font-bold mb-8">Panel de control</h1>
 
 {% comment %}Tarjetas de métricas{% endcomment %}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-        <p class="text-zinc-500 text-sm mb-1">Total productos</p>
-        <p class="text-3xl font-bold font-['Space_Grotesk']">{{ total_products }}</p>
+    <div class="theme-bg-secondary border theme-border rounded-xl p-6">
+        <p class="theme-text-secondary text-sm mb-1">Total productos</p>
+        <p class="text-3xl font-bold font-heading">{{ total_products }}</p>
     </div>
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-        <p class="text-zinc-500 text-sm mb-1">Categorías</p>
-        <p class="text-3xl font-bold font-['Space_Grotesk']">{{ total_categories }}</p>
+    <div class="theme-bg-secondary border theme-border rounded-xl p-6">
+        <p class="theme-text-secondary text-sm mb-1">Categorías</p>
+        <p class="text-3xl font-bold font-heading">{{ total_categories }}</p>
     </div>
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-        <p class="text-zinc-500 text-sm mb-1">Sin stock</p>
-        <p class="text-3xl font-bold font-['Space_Grotesk'] text-red-400">{{ out_of_stock }}</p>
+    <div class="theme-bg-secondary border theme-border rounded-xl p-6">
+        <p class="theme-text-secondary text-sm mb-1">Sin stock</p>
+        <p class="text-3xl font-bold font-heading text-red-400">{{ out_of_stock }}</p>
     </div>
-    <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-6">
-        <p class="text-zinc-500 text-sm mb-1">Stock bajo (≤3)</p>
-        <p class="text-3xl font-bold font-['Space_Grotesk'] text-amber-400">{{ low_stock }}</p>
+    <div class="theme-bg-secondary border theme-border rounded-xl p-6">
+        <p class="theme-text-secondary text-sm mb-1">Stock bajo (≤3)</p>
+        <p class="text-3xl font-bold font-heading text-amber-400">{{ low_stock }}</p>
     </div>
 </div>
 
 {% comment %}Alertas de stock{% endcomment %}
 {% if out_of_stock_products or low_stock_products %}
-<h2 class="font-['Space_Grotesk'] text-lg font-semibold mb-4 mt-10">Alertas de stock</h2>
+<h2 class="font-heading text-lg font-semibold mb-4 mt-10">Alertas de stock</h2>
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-10">
   {% if out_of_stock_products %}
-  <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-    <div class="px-5 py-3 border-b border-zinc-800 flex items-center justify-between">
+  <div class="theme-bg-secondary border theme-border rounded-xl overflow-hidden">
+    <div class="px-5 py-3 border-b theme-border flex items-center justify-between">
       <h3 class="text-sm font-semibold text-red-400 flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
         </svg>
         Agotados
       </h3>
-      <span class="text-xs text-zinc-500">{{ out_of_stock_products|length }} producto{{ out_of_stock_products|length|pluralize:"s" }}</span>
+      <span class="text-xs theme-text-secondary">{{ out_of_stock_products|length }} producto{{ out_of_stock_products|length|pluralize:"s" }}</span>
     </div>
     <div class="divide-y divide-zinc-800">
       {% for p in out_of_stock_products %}
@@ -54,29 +54,29 @@
         </div>
         {% endif %}
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-white truncate">{{ p.name }}</p>
-          <p class="text-xs text-zinc-500">{{ p.category.name }}</p>
+          <p class="text-sm font-medium theme-text-primary truncate">{{ p.name }}</p>
+          <p class="text-xs theme-text-secondary">{{ p.category.name }}</p>
         </div>
         <span class="text-xs font-bold text-red-400">0</span>
       </div>
       {% endfor %}
     </div>
-    <a href="{% url 'dashboard:alertas' %}" class="block px-5 py-2.5 text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors text-center border-t border-zinc-800">
+    <a href="{% url 'dashboard:alertas' %}" class="block px-5 py-2.5 text-xs font-medium theme-text-secondary hover:text-white hover:bg-zinc-800/50 transition-colors text-center border-t theme-border">
       Ver todas las alertas →
     </a>
   </div>
   {% endif %}
 
   {% if low_stock_products %}
-  <div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-    <div class="px-5 py-3 border-b border-zinc-800 flex items-center justify-between">
+  <div class="theme-bg-secondary border theme-border rounded-xl overflow-hidden">
+    <div class="px-5 py-3 border-b theme-border flex items-center justify-between">
       <h3 class="text-sm font-semibold text-yellow-400 flex items-center gap-2">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"/>
         </svg>
         Stock bajo (≤3)
       </h3>
-      <span class="text-xs text-zinc-500">{{ low_stock_products|length }} producto{{ low_stock_products|length|pluralize:"s" }}</span>
+      <span class="text-xs theme-text-secondary">{{ low_stock_products|length }} producto{{ low_stock_products|length|pluralize:"s" }}</span>
     </div>
     <div class="divide-y divide-zinc-800">
       {% for p in low_stock_products %}
@@ -91,14 +91,14 @@
         </div>
         {% endif %}
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-white truncate">{{ p.name }}</p>
-          <p class="text-xs text-zinc-500">{{ p.category.name }}</p>
+          <p class="text-sm font-medium theme-text-primary truncate">{{ p.name }}</p>
+          <p class="text-xs theme-text-secondary">{{ p.category.name }}</p>
         </div>
         <span class="text-xs font-bold text-yellow-400">{{ p.stock }}</span>
       </div>
       {% endfor %}
     </div>
-    <a href="{% url 'dashboard:alertas' %}" class="block px-5 py-2.5 text-xs font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/50 transition-colors text-center border-t border-zinc-800">
+    <a href="{% url 'dashboard:alertas' %}" class="block px-5 py-2.5 text-xs font-medium theme-text-secondary hover:text-white hover:bg-zinc-800/50 transition-colors text-center border-t theme-border">
       Ver todas las alertas →
     </a>
   </div>
@@ -107,24 +107,24 @@
 {% endif %}
 
 {% comment %}Últimos productos{% endcomment %}
-<h2 class="font-['Space_Grotesk'] text-lg font-semibold mb-4">Últimos productos</h2>
-<div class="bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden">
-    <table class="w-full text-sm">
+<h2 class="font-heading text-lg font-semibold mb-4">Últimos productos</h2>
+<div class="theme-bg-secondary border theme-border rounded-xl overflow-hidden">
+    <table class="dash-table">
         <thead>
-            <tr class="border-b border-zinc-800 text-zinc-500 text-left">
-                <th class="px-5 py-3 font-medium">Producto</th>
-                <th class="px-5 py-3 font-medium">Categoría</th>
-                <th class="px-5 py-3 font-medium">Precio</th>
-                <th class="px-5 py-3 font-medium">Stock</th>
+            <tr>
+                <th>Producto</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Stock</th>
             </tr>
         </thead>
         <tbody>
             {% for p in latest_products %}
-            <tr class="border-b border-zinc-800 last:border-0 hover:bg-zinc-800/50 transition-colors">
-                <td class="px-5 py-3 font-medium">{{ p.name }}</td>
-                <td class="px-5 py-3 text-zinc-400">{{ p.category.name }}</td>
-                <td class="px-5 py-3">${{ p.price }}</td>
-                <td class="px-5 py-3">
+            <tr>
+                <td class="font-medium">{{ p.name }}</td>
+                <td class="theme-text-secondary">{{ p.category.name }}</td>
+                <td>${{ p.price }}</td>
+                <td>
                     {% if p.stock == 0 %}
                     <span class="text-red-400">Sin stock</span>
                     {% elif p.stock <= 3 %}
@@ -136,7 +136,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="4" class="px-5 py-8 text-center text-zinc-500">No hay productos aún.</td>
+                <td colspan="4" class="text-center theme-text-secondary">No hay productos aún.</td>
             </tr>
             {% endfor %}
         </tbody>
