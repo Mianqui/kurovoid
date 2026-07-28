@@ -14,7 +14,7 @@ COPY . .
 RUN python manage.py collectstatic --noinput
 
 RUN addgroup --system app && adduser --system --ingroup app app
-RUN chown -R app:app /app
+RUN mkdir -p /app/media && chown -R app:app /app
 USER app
 
 EXPOSE 8000
