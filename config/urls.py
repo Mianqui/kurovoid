@@ -5,14 +5,13 @@ from django.urls import include, path
 
 from catalog.views import HomeView
 
-# Rutas principales del proyecto
 urlpatterns = [
-    path("", HomeView.as_view(), name="home"),               # Página de inicio
-    path("auth-admin-x9k2/", include("users.urls")),         # Auth (solo admin)
-    path("kurovoid-secret-admin/", admin.site.urls),         # Panel admin Django
-    path("tienda/", include("catalog.urls")),                # Catálogo de productos
-    path("pedidos/", include("orders.urls")),                # Carrito (oculto, futuro)
-    path("dashboard/", include("dashboard.urls")),           # Panel staff/superuser
+    path("", HomeView.as_view(), name="home"),
+    path("auth/", include("users.urls")),
+    path("admin/", admin.site.urls),
+    path("tienda/", include("catalog.urls")),
+    path("pedidos/", include("orders.urls")),
+    path("dashboard/", include("dashboard.urls")),
 ]
 
 # Sirve archivos media en desarrollo
