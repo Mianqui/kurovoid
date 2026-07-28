@@ -73,29 +73,17 @@
     </div>
 
     <div>
-      <label class="dash-label">Tallas</label>
-      <div class="flex flex-wrap gap-2">
-        {% for checkbox in form.sizes %}
-        <label class="flex items-center gap-2 bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-sm text-zinc-300 cursor-pointer transition-colors has-checked">
-          {{ checkbox.tag }}
-          {{ checkbox.choice_label }}
-        </label>
-        {% endfor %}
-      </div>
-      {% for error in form.sizes.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+      <label class="dash-label">Tallas (separadas por coma)</label>
+      {{ form.sizes_text }}
+      <p class="text-xs text-zinc-500 mt-1">Ejemplo: S, M, L, XL</p>
+      {% for error in form.sizes_text.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
     </div>
 
     <div>
-      <label class="dash-label">Colores</label>
-      <div class="flex flex-wrap gap-2">
-        {% for checkbox in form.colors %}
-        <label class="flex items-center gap-2 bg-zinc-800 border border-zinc-700 rounded-lg px-4 py-2 text-sm text-zinc-300 cursor-pointer transition-colors has-checked">
-          {{ checkbox.tag }}
-          {{ checkbox.choice_label }}
-        </label>
-        {% endfor %}
-      </div>
-      {% for error in form.colors.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+      <label class="dash-label">Colores (separados por coma)</label>
+      {{ form.colors_text }}
+      <p class="text-xs text-zinc-500 mt-1">Ejemplo: Rojo, Azul, Negro</p>
+      {% for error in form.colors_text.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
     </div>
 
     <div class="flex items-center gap-3">

@@ -3,12 +3,26 @@
 
 {% block title %}{{ product.name }}{% endblock %}
 
+{% block extra_head %}
+    <meta property="og:title" content="{{ product.name }} — KUROVOID">
+    <meta property="og:description" content="{{ product.description|truncatewords:20 }}">
+    {% with main_image=images|first %}
+    {% if main_image %}
+    <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ main_image.image.url }}">
+    {% endif %}
+    {% endwith %}
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+    <meta property="og:type" content="product">
+{% endblock %}
+
 {% block content %}
 <div class="w-full px-4 sm:px-6 lg:px-8 py-8">
     <nav class="breadcrumbs">
         <a href="{% url 'catalog:product_list' %}">Tienda</a>
+        {% if product.category %}
         <span class="breadcrumbs-separator">/</span>
         <a href="{% url 'catalog:category_list' product.category.slug %}">{{ product.category.name }}</a>
+        {% endif %}
         <span class="breadcrumbs-separator">/</span>
         <span class="breadcrumbs-current">{{ product.name }}</span>
     </nav>
@@ -84,8 +98,9 @@
                 const color = form.querySelector('input[name="color"]:checked')?.value || 'No especificado';
                 const qty = form.querySelector('input[name="quantity"]')?.value || 1;
                 
-                const productName = "{{ product.name }}";
-                const message = `Hola, me interesa comprar el producto: ${productName}\n- Talla: ${size}\n- Color: ${color}\n- Cantidad: ${qty}`;
+                const productName = "{{ product.name|escapejs }}";
+                const productUrl = window.location.href;
+                const message = `Hola KUROVOID, me interesa comprar este producto:\n\n*${productName}*\n- Cantidad: ${qty}\n- Talla: ${size}\n- Color: ${color}\n\nEnlace: ${productUrl}`;
                 
                 // Reutilizando el número integrado
                 const waUrl = `https://wa.me/573144871445?text=${encodeURIComponent(message)}`;

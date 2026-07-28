@@ -10,15 +10,15 @@ CHECKBOX_CLASSES = "w-4 h-4 rounded border-zinc-600 bg-zinc-700 text-white focus
 
 
 class ProductForm(forms.ModelForm):
-    sizes = forms.ModelMultipleChoiceField(
-        queryset=Size.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
+    sizes_text = forms.CharField(
         required=False,
+        label="Tallas (separadas por coma)",
+        widget=forms.TextInput(attrs={"class": INPUT_CLASSES, "placeholder": "Ej: S, M, L, XL"}),
     )
-    colors = forms.ModelMultipleChoiceField(
-        queryset=Color.objects.all(),
-        widget=forms.CheckboxSelectMultiple,
+    colors_text = forms.CharField(
         required=False,
+        label="Colores (separados por coma)",
+        widget=forms.TextInput(attrs={"class": INPUT_CLASSES, "placeholder": "Ej: Rojo, Azul, Negro"}),
     )
     image = forms.ImageField(required=False, label="Imagen principal")
 
@@ -26,7 +26,7 @@ class ProductForm(forms.ModelForm):
         model = Product
         fields = [
             "name", "category", "description", "price",
-            "stock", "sizes", "colors", "is_active",
+            "stock", "is_active",
         ]
         widgets = {
             "name": forms.TextInput(attrs={"class": INPUT_CLASSES, "placeholder": "Nombre del producto"}),
@@ -37,6 +37,16 @@ class ProductForm(forms.ModelForm):
             "is_active": forms.CheckboxInput(attrs={"class": CHECKBOX_CLASSES}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk:
+            self.fields["sizes_text"].initial = ", ".join(
+                [s.name for s in self.instance.sizes.all()]
+            )
+            self.fields["colors_text"].initial = ", ".join(
+                [c.name for c in self.instance.colors.all()]
+            )
+
     def save(self, commit=True):
         product = super().save(commit=False)
         if not product.slug:
@@ -44,6 +54,24 @@ class ProductForm(forms.ModelForm):
         if commit:
             product.save()
             self.save_m2m()
+
+            sizes_input = self.cleaned_data.get("sizes_text", "")
+            size_names = [s.strip() for s in sizes_input.split(",") if s.strip()]
+            size_objs = []
+            for name in size_names:
+                obj, _ = Size.objects.get_or_create(name=name.upper())
+                size_objs.append(obj)
+            product.sizes.set(size_objs)
+
+            colors_input = self.cleaned_data.get("colors_text", "")
+            color_names = [c.strip() for c in colors_input.split(",") if c.strip()]
+            color_objs = []
+            for name in color_names:
+                name = name.capitalize()
+                obj, _ = Color.objects.get_or_create(name=name, defaults={"hex_code": "#000000"})
+                color_objs.append(obj)
+            product.colors.set(color_objs)
+
             image = self.cleaned_data.get("image")
             if image:
                 ProductImage.objects.update_or_create(
