@@ -39,7 +39,7 @@ jobs:
 
       - name: Instalar cloudflared
         run: |
-          curl -fsSL https://github.com/cloudflare/cloudflared/releases/download/2025.4.2/cloudflared-linux-amd64.deb -o cloudflared.deb
+          curl -fsSL https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb -o cloudflared.deb
           sudo dpkg -i cloudflared.deb
 
       - name: Configurar SSH
