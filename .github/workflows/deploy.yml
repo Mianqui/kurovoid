@@ -103,13 +103,13 @@ jobs:
           cloudflared access tcp --hostname ${{ secrets.SERVER_SSH_HOST }} --url 127.0.0.1:2222 --id $CF_ACCESS_CLIENT_ID --secret $CF_ACCESS_CLIENT_SECRET &
           sleep 5
 
-          SSH_OPTS="-o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 -p 2222"
+          COMMON_OPTS="-o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519"
           REMOTE="${{ secrets.DEPLOY_USER }}@127.0.0.1"
 
-          ssh $SSH_OPTS $REMOTE "mkdir -p ~/kurovoid"
-          scp $SSH_OPTS compose.yml $REMOTE:~/kurovoid/compose.yml
-          scp $SSH_OPTS .env.production $REMOTE:~/kurovoid/.env
-          ssh $SSH_OPTS $REMOTE "
+          ssh $COMMON_OPTS -p 2222 $REMOTE "mkdir -p ~/kurovoid"
+          scp $COMMON_OPTS -P 2222 compose.yml $REMOTE:~/kurovoid/compose.yml
+          scp $COMMON_OPTS -P 2222 .env.production $REMOTE:~/kurovoid/.env
+          ssh $COMMON_OPTS -p 2222 $REMOTE "
             cd ~/kurovoid &&
             echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin &&
             docker compose pull &&
