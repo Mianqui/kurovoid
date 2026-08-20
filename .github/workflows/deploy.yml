@@ -70,29 +70,6 @@ jobs:
           CSRF_TRUSTED_ORIGINS=${{ secrets.CSRF_TRUSTED_ORIGINS }}
           EOF
 
-      - name: Debug - Verificar acceso
-        env:
-          CF_ACCESS_CLIENT_ID: ${{ secrets.CF_ACCESS_CLIENT_ID }}
-          CF_ACCESS_CLIENT_SECRET: ${{ secrets.CF_ACCESS_CLIENT_SECRET }}
-        run: |
-          echo "=== Verificar variables ==="
-          echo "CF_ACCESS_CLIENT_ID set: $([ -n "$CF_ACCESS_CLIENT_ID" ] && echo 'YES' || echo 'NO')"
-          echo "CF_ACCESS_CLIENT_SECRET set: $([ -n "$CF_ACCESS_CLIENT_SECRET" ] && echo 'YES' || echo 'NO')"
-          echo "CF_ACCESS_CLIENT_ID length: ${#CF_ACCESS_CLIENT_ID}"
-          echo "CF_ACCESS_CLIENT_SECRET length: ${#CF_ACCESS_CLIENT_SECRET}"
-
-          echo "=== DNS check ==="
-          nslookup ${{ secrets.SERVER_SSH_HOST }} || true
-
-          echo "=== Test Access auth ==="
-          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "CF-Access-Client-Id: $CF_ACCESS_CLIENT_ID" \
-            -H "CF-Access-Client-Secret: $CF_ACCESS_CLIENT_SECRET" \
-            "https://${{ secrets.SERVER_SSH_HOST }}" 2>&1) || true
-          echo "HTTP response code: $HTTP_CODE"
-
-          echo "=== cloudflared version ==="
-          cloudflared --version
 
       - name: Desplegar
         env:

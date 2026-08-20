@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="flex items-center justify-between mb-6">
-  <h1 class="font-heading text-2xl font-bold text-white">Alertas de Stock</h1>
+  <h1 class="font-heading text-2xl font-bold theme-text-primary">Alertas de Stock</h1>
   <span class="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-sm font-medium">{{ total_alertas }} producto{{ total_alertas|pluralize:"s" }}</span>
 </div>
 
@@ -21,7 +21,7 @@
         <th class="text-right">Acción</th>
       </tr>
     </thead>
-    <tbody class="divide-y divide-zinc-800">
+    <tbody class="divide-y divide-[var(--border)]">
       {% for p in productos %}
       <tr>
         <td>
@@ -57,7 +57,7 @@
           {% endif %}
         </td>
         <td class="text-right">
-          <button onclick="abrirModal({{ p.id }}, '{{ p.name|escapejs }}', {{ p.stock }})" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-medium transition-colors inline-flex items-center gap-1.5">
+          <button onclick="abrirModal({{ p.id }}, '{{ p.name|escapejs }}', {{ p.stock }})" class="px-3 py-1.5 theme-bg-primary theme-hover theme-text-primary rounded-lg text-xs font-medium transition-colors inline-flex items-center gap-1.5">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
             </svg>
@@ -83,7 +83,7 @@
 <div id="stockModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm">
   <div class="theme-bg-secondary border theme-border rounded-xl p-6 w-full max-w-sm mx-4 shadow-2xl">
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-bold text-white" id="modalTitle">Reponer stock</h3>
+      <h3 class="text-lg font-bold theme-text-primary" id="modalTitle">Reponer stock</h3>
       <button onclick="cerrarModal()" class="p-1 theme-text-secondary hover:text-white transition-colors">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -91,12 +91,12 @@
       </button>
     </div>
     <p class="theme-text-secondary text-sm mb-4" id="modalDesc">Actualiza la cantidad disponible en stock.</p>
-    <input type="number" id="modalCantidad" min="0" class="w-full mb-4 text-center font-bold text-lg" value="0">
+      <input type="number" id="modalCantidad" min="0" class="w-full mb-4 text-center font-bold text-lg theme-bg-primary theme-border theme-text-primary rounded-lg px-3 py-2" value="0">
     <div class="flex items-center gap-2 mt-4">
       <button onclick="guardarStock()" class="flex-1 px-4 py-2.5 theme-accent-bg rounded-lg text-sm font-medium hover:opacity-80 transition-opacity">
         Guardar
       </button>
-      <button onclick="cerrarModal()" class="flex-1 px-4 py-2.5 bg-zinc-800 text-zinc-300 rounded-lg text-sm font-medium hover:bg-zinc-700 transition-colors">
+      <button onclick="cerrarModal()" class="flex-1 px-4 py-2.5 bg-zinc-800 theme-text-secondary rounded-lg text-sm font-medium hover:bg-zinc-700 transition-colors">
         Cancelar
       </button>
     </div>

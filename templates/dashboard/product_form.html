@@ -73,17 +73,33 @@
     </div>
 
     <div>
-      <label class="dash-label">Tallas (separadas por coma)</label>
-      {{ form.sizes_text }}
-      <p class="text-xs text-zinc-500 mt-1">Ejemplo: S, M, L, XL</p>
-      {% for error in form.sizes_text.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+      <label class="dash-label">Tallas</label>
+      <div class="flex flex-wrap gap-2">
+        {% for checkbox in form.sizes %}
+        <label class="size-label-dash {% if checkbox.data.selected %}is-selected{% endif %}">
+          {{ checkbox.tag }}
+          {{ checkbox.choice_label }}
+        </label>
+        {% empty %}
+        <p class="text-xs text-zinc-500">No hay tallas creadas aún</p>
+        {% endfor %}
+      </div>
+      {% for error in form.sizes.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
     </div>
 
     <div>
-      <label class="dash-label">Colores (separados por coma)</label>
-      {{ form.colors_text }}
-      <p class="text-xs text-zinc-500 mt-1">Ejemplo: Rojo, Azul, Negro</p>
-      {% for error in form.colors_text.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+      <label class="dash-label">Colores</label>
+      <div class="flex flex-wrap gap-3">
+        {% for checkbox in form.colors %}
+        <label class="color-label-dash {% if checkbox.data.selected %}is-selected{% endif %}" title="{{ checkbox.choice_label }}">
+          {{ checkbox.tag }}
+          <span class="color-label-name">{{ checkbox.choice_label }}</span>
+        </label>
+        {% empty %}
+        <p class="text-xs text-zinc-500">No hay colores creados aún</p>
+        {% endfor %}
+      </div>
+      {% for error in form.colors.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
     </div>
 
     <div class="flex items-center gap-3">
@@ -138,7 +154,7 @@
           <th class="text-right">Acción</th>
         </tr>
       </thead>
-      <tbody id="imagenes-tbody" class="divide-y divide-zinc-800">
+      <tbody id="imagenes-tbody" class="divide-y divide-[var(--border)]">
         {% for img in product_images %}
         <tr class="cursor-grab" data-id="{{ img.id }}">
           <td class="theme-text-secondary">
@@ -152,7 +168,7 @@
             </div>
           </td>
           <td class="px-4 py-3">
-            <input type="text" value="{{ img.alt_text }}" placeholder="Descripción de la imagen" class="w-full min-w-[140px] bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-1.5 text-xs text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-white transition-colors" onchange="actualizarAltText({{ img.id }}, this.value)">
+            <input type="text" value="{{ img.alt_text }}" placeholder="Descripción de la imagen" class="w-full min-w-[140px] theme-bg-primary theme-border rounded-lg px-3 py-1.5 text-xs theme-text-secondary placeholder-zinc-600 focus:outline-none focus:border-accent transition-colors" onchange="actualizarAltText({{ img.id }}, this.value)">
           </td>
           <td class="px-4 py-3 text-center">
             {% if img.is_main %}
@@ -163,13 +179,13 @@
               Principal
             </span>
             {% else %}
-            <button onclick="setPrincipal({{ img.id }})" class="px-3 py-1 text-xs font-medium text-zinc-500 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors">
+            <button onclick="setPrincipal({{ img.id }})" class="px-3 py-1 text-xs font-medium theme-text-secondary hover:text-white hover:bg-zinc-700 rounded-lg transition-colors">
               Marcar
             </button>
             {% endif %}
           </td>
           <td class="px-4 py-3 text-right">
-            <button onclick="eliminarImagen({{ img.id }})" class="p-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar">
+            <button onclick="eliminarImagen({{ img.id }})" class="p-1.5 theme-text-secondary hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
               </svg>
@@ -242,7 +258,7 @@
       reader.onload = (e) => {
         const div = document.createElement('div');
         div.className = 'relative aspect-square rounded-lg overflow-hidden border border-zinc-700';
-        div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/40 flex items-center justify-center"><div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div></div>`;
+        div.innerHTML = `<img src="${e.target.result}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/40 flex items-center justify-center"><div class="w-5 h-5 border-2 border-accent border-t-transparent rounded-full animate-spin"></div></div>`;
         uploadPreviews.appendChild(div);
       };
       reader.readAsDataURL(f);
@@ -283,7 +299,7 @@
         </div>
       </td>
       <td class="px-4 py-3">
-        <input type="text" value="${img.alt_text}" placeholder="Descripción de la imagen" class="w-full min-w-[140px] bg-zinc-800 border border-zinc-700 rounded-lg px-3 py-1.5 text-xs text-zinc-300 placeholder-zinc-600 focus:outline-none focus:border-white transition-colors" onchange="actualizarAltText(${img.id}, this.value)">
+        <input type="text" value="${img.alt_text}" placeholder="Descripción de la imagen" class="w-full min-w-[140px] theme-bg-primary theme-border rounded-lg px-3 py-1.5 text-xs theme-text-secondary placeholder-zinc-600 focus:outline-none focus:border-accent transition-colors" onchange="actualizarAltText(${img.id}, this.value)">
       </td>
       <td class="px-4 py-3 text-center">
         <button onclick="setPrincipal(${img.id})" class="px-3 py-1 text-xs font-medium text-zinc-500 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors">Marcar</button>

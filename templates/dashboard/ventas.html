@@ -54,20 +54,36 @@ document.addEventListener('DOMContentLoaded', function() {
         cancelado: '#ef4444'
     };
 
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+    const lineColor = isDark ? '#fafafa' : '#09090b';
+    const lineBgColor = isDark ? 'rgba(250,250,250,0.08)' : 'rgba(9,9,11,0.08)';
+    const gridColor = isDark ? 'rgba(39,39,42,0.5)' : 'rgba(0,0,0,0.1)';
+    const tooltipBg = isDark ? '#18181b' : '#ffffff';
+    const tooltipBorder = isDark ? '#27272a' : '#e4e4e7';
+    const tooltipTitle = isDark ? '#fafafa' : '#09090b';
+    const tooltipBody = isDark ? '#a1a1aa' : '#71717a';
+    const tickColor = '#71717a';
+
     const lineCtx = document.getElementById('lineChart').getContext('2d');
+    const fechas = {{ line_fechas|safe }};
+    const totalesIngresos = {{ line_totales|safe }};
+
     new Chart(lineCtx, {
         type: 'line',
         data: {
-            labels: {{ line_fechas|safe }},
+            labels: fechas,
             datasets: [{
                 label: 'Ingresos',
-                data: {{ line_montos|safe }},
-                borderColor: '#fafafa',
-                backgroundColor: 'rgba(250,250,250,0.08)',
+                data: totalesIngresos,
+                borderColor: lineColor,
+                backgroundColor: lineBgColor,
                 borderWidth: 2,
-                pointRadius: 0,
-                pointHoverRadius: 5,
-                pointHoverBackgroundColor: '#fafafa',
+                pointBackgroundColor: '#18181b',
+                pointBorderColor: lineColor,
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointHoverBackgroundColor: lineColor,
                 tension: 0.35,
                 fill: true
             }]
@@ -79,10 +95,10 @@ document.addEventListener('DOMContentLoaded', function() {
             plugins: {
                 legend: { display: false },
                 tooltip: {
-                    backgroundColor: '#18181b',
-                    titleColor: '#fafafa',
-                    bodyColor: '#a1a1aa',
-                    borderColor: '#27272a',
+                    backgroundColor: tooltipBg,
+                    titleColor: tooltipTitle,
+                    bodyColor: tooltipBody,
+                    borderColor: tooltipBorder,
                     borderWidth: 1,
                     cornerRadius: 8,
                     padding: 10,
@@ -95,15 +111,15 @@ document.addEventListener('DOMContentLoaded', function() {
             },
             scales: {
                 x: {
-                    ticks: { color: '#71717a', maxTicksLimit: 10 },
-                    grid: { color: 'rgba(39,39,42,0.5)' }
+                    ticks: { color: tickColor, maxTicksLimit: 10 },
+                    grid: { color: gridColor }
                 },
                 y: {
                     ticks: {
-                        color: '#71717a',
+                        color: tickColor,
                         callback: function(v) { return '$' + v.toLocaleString('es-CO'); }
                     },
-                    grid: { color: 'rgba(39,39,42,0.5)' }
+                    grid: { color: gridColor }
                 }
             }
         }

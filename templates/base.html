@@ -31,7 +31,7 @@
             <div class="navbar-inner">
                 <div class="flex items-center gap-4">
                     {% comment %}Botón para abrir menú lateral{% endcomment %}
-                    <button id="sidebarToggle" class="p-2 theme-text-secondary hover:opacity-80 transition-opacity">
+                    <button id="sidebarToggle" class="p-2 text-black hover:opacity-80 transition-opacity">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                         </svg>
@@ -42,13 +42,13 @@
                 </a>
                 <div class="flex items-center gap-6">
                     
-                    <a href="{% url 'catalog:product_list' %}?favs=1" class="relative p-2 theme-text-secondary theme-hover transition-colors" title="Favoritos" id="navFavIcon">
+                    <a href="{% url 'catalog:product_list' %}?favs=1" class="relative p-2 text-black theme-hover transition-colors" title="Favoritos" id="navFavIcon">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                         </svg>
                     </a>
                     
-                    <button id="filterToggle" class="p-2 theme-text-secondary hover:opacity-80 transition-opacity" title="Buscar">
+                    <button id="filterToggle" class="p-2 text-black hover:opacity-80 transition-opacity" title="Buscar">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                         </svg>
@@ -56,7 +56,7 @@
 
 
                     {% comment %}Alternar modo oscuro/claro{% endcomment %}
-                    <button id="themeToggle" class="p-2 theme-text-secondary hover:opacity-80 transition-opacity" title="Cambiar tema">
+                    <button id="themeToggle" class="p-2 text-black hover:opacity-80 transition-opacity" title="Cambiar tema">
                         <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
                         </svg>
@@ -73,7 +73,7 @@
             <a href="{% url 'home' %}">
                 <img id="logoImg" src="{% static 'img/tipografia_kurovoid_negativa.png' %}" alt="KUROVOID" class="h-10 w-auto">
             </a>
-            <button id="sidebarClose" class="p-2 theme-text-secondary hover:opacity-80 transition-opacity rounded-lg hover:bg-zinc-800">
+            <button id="sidebarClose" class="p-2 text-black hover:opacity-80 transition-opacity rounded-lg hover:bg-zinc-800">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                     </svg>
@@ -256,13 +256,11 @@
         const savedTheme = localStorage.getItem('theme') || 'dark';
         setTheme(savedTheme);
 
-        const themeToggleSidebar = document.getElementById('themeToggleSidebar');
         function toggleTheme() {
             const current = html.getAttribute('data-theme');
             setTheme(current === 'dark' ? 'light' : 'dark');
         }
         themeToggle?.addEventListener('click', toggleTheme);
-        themeToggleSidebar?.addEventListener('click', toggleTheme);
 
         // --- Favoritos (Cookies) ---
         function getFavs() {
@@ -287,7 +285,7 @@
             let added = false;
             if (favs.includes(id)) {
                 favs = favs.filter(x => x !== id);
-                if (btnElement) btnElement.style.color = "white"; // o color por defecto
+                if (btnElement) btnElement.style.color = "var(--text-primary)"; // o color por defecto
                 showAlert('Producto eliminado de favoritos', 'success');
             } else {
                 favs.push(id);
@@ -306,7 +304,7 @@
                     btn.style.color = "var(--accent)";
                     btn.querySelector('svg').setAttribute('fill', 'currentColor');
                 } else {
-                    btn.style.color = "white"; // o text-secondary según donde esté
+                    btn.style.color = "var(--text-secondary)"; // o text-secondary según donde esté
                     btn.querySelector('svg').setAttribute('fill', 'none');
                 }
             });

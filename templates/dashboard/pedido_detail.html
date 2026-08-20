@@ -51,7 +51,7 @@
                     <th>Subtotal</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-zinc-800">
+            <tbody class="divide-y divide-[var(--border)]">
                 {% for item in pedido.items.all %}
                 <tr>
                     <td class="px-5 py-3">
@@ -91,7 +91,7 @@
             <div class="flex flex-wrap items-end gap-4">
                 <div>
                     <label class="block text-xs theme-text-secondary mb-1">Estado</label>
-                    <select name="estado" class="bg-zinc-800 border border-zinc-700 text-white text-sm rounded-lg px-3 py-2">
+                    <select name="estado" class="theme-bg-primary theme-border theme-text-primary text-sm rounded-lg px-3 py-2">
                         {% for key, label in pedido.ESTADO_CHOICES %}
                         <option value="{{ key }}" {% if pedido.estado == key %}selected{% endif %}>{{ label }}</option>
                         {% endfor %}
@@ -99,9 +99,9 @@
                 </div>
                 <div id="guiaField" class="{% if pedido.estado != 'enviado' %}hidden{% endif %}">
                     <label class="block text-xs theme-text-secondary mb-1">Número de guía</label>
-                    <input type="text" name="numero_guia" value="{{ pedido.numero_guia }}" placeholder="KRV-..." class="bg-zinc-800 border border-zinc-700 text-white text-sm rounded-lg px-3 py-2 w-48">
+                    <input type="text" name="numero_guia" value="{{ pedido.numero_guia }}" placeholder="KRV-..." class="theme-bg-primary theme-border theme-text-primary text-sm rounded-lg px-3 py-2 w-48">
                 </div>
-                <button type="submit" class="bg-zinc-700 hover:bg-zinc-600 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
+                <button type="submit" class="theme-bg-secondary theme-hover text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors">
                     Actualizar estado
                 </button>
             </div>

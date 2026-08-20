@@ -22,7 +22,7 @@
     <form method="get" class="flex flex-wrap items-end gap-3">
         <div>
             <label class="block text-xs theme-text-secondary mb-1">Estado</label>
-            <select name="estado" class="bg-zinc-800 border border-zinc-700 text-white text-sm rounded-lg px-3 py-2">
+            <select name="estado" class="theme-bg-primary theme-border theme-text-primary text-sm rounded-lg px-3 py-2">
                 <option value="">Todos</option>
                 {% with ESTADOS as choices %}
                 {% for key, label in choices %}
@@ -33,7 +33,7 @@
         </div>
         <div>
             <label class="block text-xs theme-text-secondary mb-1">Fecha</label>
-            <select name="fecha" class="bg-zinc-800 border border-zinc-700 text-white text-sm rounded-lg px-3 py-2">
+            <select name="fecha" class="theme-bg-primary theme-border theme-text-primary text-sm rounded-lg px-3 py-2">
                 <option value="">Todas</option>
                 <option value="hoy" {% if selected_fecha == 'hoy' %}selected{% endif %}>Hoy</option>
                 <option value="semana" {% if selected_fecha == 'semana' %}selected{% endif %}>Esta semana</option>
@@ -42,9 +42,9 @@
         </div>
         <div class="flex-1 min-w-[200px]">
             <label class="block text-xs theme-text-secondary mb-1">Buscar</label>
-            <input type="text" name="q" value="{{ selected_q }}" placeholder="Cliente o teléfono..." class="w-full bg-zinc-800 border border-zinc-700 text-white text-sm rounded-lg px-3 py-2">
+            <input type="text" name="q" value="{{ selected_q }}" placeholder="Cliente o teléfono..." class="w-full theme-bg-primary theme-border theme-text-primary text-sm rounded-lg px-3 py-2">
         </div>
-        <button type="submit" class="bg-zinc-700 hover:bg-zinc-600 text-sm font-medium px-4 py-2 rounded-lg transition-colors">Filtrar</button>
+        <button type="submit" class="theme-bg-secondary theme-hover text-sm font-medium px-4 py-2 rounded-lg transition-colors">Filtrar</button>
         <a href="{% url 'dashboard:pedido_list' %}" class="theme-text-secondary hover:text-white text-sm px-3 py-2 transition-colors">Limpiar</a>
     </form>
 
@@ -61,7 +61,7 @@
                         <th>Acciones</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-zinc-800">
+            <tbody class="divide-y divide-[var(--border)]">
                 {% for pedido in pedidos %}
                 <tr>
                     <td class="font-mono text-xs">{{ pedido.numero_pedido }}</td>
@@ -93,13 +93,13 @@
     {% if page_obj.has_other_pages %}
     <div class="flex items-center justify-center gap-2">
         {% if page_obj.has_previous %}
-        <a href="?page={{ page_obj.previous_page_number }}{% if selected_estado %}&estado={{ selected_estado }}{% endif %}{% if selected_fecha %}&fecha={{ selected_fecha }}{% endif %}{% if selected_q %}&q={{ selected_q }}{% endif %}" class="px-3 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors">Anterior</a>
+        <a href="?page={{ page_obj.previous_page_number }}{% if selected_estado %}&estado={{ selected_estado }}{% endif %}{% if selected_fecha %}&fecha={{ selected_fecha }}{% endif %}{% if selected_q %}&q={{ selected_q }}{% endif %}" class="px-3 py-2 text-sm rounded-lg theme-bg-primary theme-hover theme-text-secondary transition-colors">Anterior</a>
         {% endif %}
         {% for num in page_obj.paginator.page_range %}
-        <a href="?page={{ num }}{% if selected_estado %}&estado={{ selected_estado }}{% endif %}{% if selected_fecha %}&fecha={{ selected_fecha }}{% endif %}{% if selected_q %}&q={{ selected_q }}{% endif %}" class="px-3 py-2 text-sm rounded-lg {% if page_obj.number == num %}bg-zinc-600 text-white{% else %}bg-zinc-800 text-zinc-400 hover:bg-zinc-700{% endif %} transition-colors">{{ num }}</a>
+        <a href="?page={{ num }}{% if selected_estado %}&estado={{ selected_estado }}{% endif %}{% if selected_fecha %}&fecha={{ selected_fecha }}{% endif %}{% if selected_q %}&q={{ selected_q }}{% endif %}" class="px-3 py-2 text-sm rounded-lg {% if page_obj.number == num %}bg-zinc-600 theme-text-primary{% else %}bg-zinc-800 theme-text-secondary hover:bg-zinc-700{% endif %} transition-colors">{{ num }}</a>
         {% endfor %}
         {% if page_obj.has_next %}
-        <a href="?page={{ page_obj.next_page_number }}{% if selected_estado %}&estado={{ selected_estado }}{% endif %}{% if selected_fecha %}&fecha={{ selected_fecha }}{% endif %}{% if selected_q %}&q={{ selected_q }}{% endif %}" class="px-3 py-2 text-sm rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors">Siguiente</a>
+        <a href="?page={{ page_obj.next_page_number }}{% if selected_estado %}&estado={{ selected_estado }}{% endif %}{% if selected_fecha %}&fecha={{ selected_fecha }}{% endif %}{% if selected_q %}&q={{ selected_q }}{% endif %}" class="px-3 py-2 text-sm rounded-lg theme-bg-primary theme-hover theme-text-secondary transition-colors">Siguiente</a>
         {% endif %}
     </div>
     {% endif %}

@@ -17,7 +17,7 @@
 
 {% block content %}
 <div class="flex items-center justify-between mb-6">
-  <h1 class="font-heading text-2xl font-bold text-white">Categorías</h1>
+        <h1 class="font-heading text-2xl font-bold theme-text-primary">Categorías</h1>
   <a href="{% url 'dashboard:categoria_create' %}" class="px-4 py-2 theme-accent-bg rounded-lg text-sm font-medium hover:opacity-80 transition-opacity">
     + Nueva categoría
   </a>
@@ -37,7 +37,7 @@
         <th class="text-right">Acciones</th>
       </tr>
     </thead>
-    <tbody id="categoriaSortable" class="divide-y divide-zinc-800">
+    <tbody id="categoriaSortable" class="divide-y divide-[var(--border)]">
       {% for cat in categorias %}
       <tr data-id="{{ cat.id }}" class="cursor-grab active:cursor-grabbing">
         <td class="theme-text-secondary">
@@ -55,7 +55,6 @@
             </svg>
           </div>
           {% endif %}
-        </td>
         </td>
         <td>
           <span class="theme-text-primary font-medium">{{ cat.name }}</span>

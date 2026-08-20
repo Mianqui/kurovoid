@@ -46,7 +46,7 @@
     transform: translateY(-50%);
     z-index: 20;
     padding: 0.5rem;
-    color: rgba(255, 255, 255, 0.6);
+    color: var(--text-secondary);
     transition: color 0.3s ease;
     background: transparent;
     border: none;
@@ -75,7 +75,7 @@
     padding: 0;
 }
 .hero-dot.is-active {
-    background-color: #ffffff;
+    background-color: var(--accent);
 }
 
 .hero-content {
@@ -317,7 +317,7 @@
     font-size: 0.875rem;
     background-color: var(--bg-secondary);
     border: 1px solid var(--border);
-    color: var(--text-primary);
+    color: #ffffff;
     border-radius: 0.25rem;
 }
 
@@ -345,7 +345,7 @@
 .breadcrumbs a { transition: color 0.15s ease; }
 .breadcrumbs a:hover { opacity: 0.8; }
 .breadcrumbs-separator { margin: 0 0.5rem; }
-.breadcrumbs-current { color: var(--text-primary); }
+.breadcrumbs-current { color: #ffffff; }
 
 /* --- Pagination --- */
 .pagination {
@@ -424,7 +424,7 @@
     text-align: center;
     background-color: var(--bg-secondary);
     border: 1px solid var(--border);
-    color: var(--text-primary);
+    color: #ffffff;
     border-radius: 0.25rem;
 }
 .cart-item-total {
@@ -457,7 +457,7 @@
 
 /* --- Authentication Forms (Login/Register) --- */
 .auth-page {
-    background-color: var(--zinc-950);
+    background-color: var(--bg-primary);
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -479,14 +479,14 @@
     margin: 0 auto;
 }
 .auth-subtitle {
-    color: var(--zinc-500);
+    color: var(--text-secondary);
     font-size: 0.875rem;
     margin-top: 0.75rem;
     letter-spacing: 0.025em;
 }
 .auth-card {
-    background-color: var(--zinc-900);
-    border: 1px solid var(--zinc-800);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
     border-radius: 1rem; /* rounded-2xl */
     padding: 2.5rem;
 }
@@ -509,14 +509,14 @@
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--zinc-500);
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
 }
 .auth-input {
     width: 100%;
-    background-color: var(--zinc-800);
-    border: 1px solid var(--zinc-700);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
     color: #ffffff;
     border-radius: 0.5rem;
     padding: 0.75rem 1rem 0.75rem 3rem;
@@ -525,7 +525,7 @@
 }
 .auth-input:focus {
     outline: none;
-    border-color: #ffffff;
+    border-color: var(--accent);
 }
 .auth-input-password {
     padding-right: 3rem;
@@ -535,7 +535,7 @@
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--zinc-500);
+    color: var(--text-secondary);
     transition: color 0.15s ease;
     background: transparent;
     border: none;
@@ -543,22 +543,22 @@
     display: flex;
     align-items: center;
 }
-.auth-btn-toggle:hover { color: var(--zinc-300); }
+.auth-btn-toggle:hover { color: #ffffff; }
 .auth-btn-submit {
     width: 100%;
-    background-color: #ffffff;
-    color: #000000;
+    background-color: var(--accent);
+    color: var(--bg-primary);
     font-weight: 600;
     border-radius: 0.5rem;
     padding: 0.75rem;
     font-size: 0.875rem;
-    transition: background-color 0.15s ease;
+    transition: opacity 0.15s ease;
     border: none;
     margin-top: 0.5rem;
 }
-.auth-btn-submit:hover { background-color: #f4f4f5; }
+.auth-btn-submit:hover { opacity: 0.8; }
 .auth-footer-link {
-    color: var(--zinc-500);
+    color: var(--text-secondary);
     font-size: 0.875rem;
     text-align: center;
     margin-top: 1.5rem;
@@ -570,7 +570,7 @@
     text-decoration: underline;
 }
 .auth-copyright {
-    color: var(--zinc-700);
+    color: var(--text-secondary);
     font-size: 0.75rem;
     text-align: center;
     margin-top: 2rem;
@@ -679,8 +679,8 @@
 .account-alert-btn:hover { background-color: #fcd34d; }
 
 .account-info-card {
-    background-color: var(--zinc-900);
-    border: 1px solid var(--zinc-800);
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border);
     border-radius: 0.75rem;
     padding: 1.5rem;
     display: flex;
@@ -688,7 +688,7 @@
     gap: 1rem;
 }
 .account-info-label {
-    color: var(--zinc-500);
+    color: var(--text-secondary);
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -718,11 +718,11 @@
 
 .account-logout-btn {
     font-size: 0.875rem;
-    color: var(--zinc-500);
+    color: var(--text-secondary);
     transition: color 0.15s ease;
     cursor: pointer;
     background: transparent;
     border: none;
     padding: 0;
 }
-.account-logout-btn:hover { color: var(--zinc-300); }
+.account-logout-btn:hover { color: #ffffff; }

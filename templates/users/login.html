@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,12 +11,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/base.css' %}">
     <link rel="stylesheet" href="{% static 'css/storefront.css' %}">
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    </script>
 </head>
 <body class="auth-page">
     <div class="auth-container">
         {% comment %}Logo{% endcomment %}
         <div class="auth-header">
-            <img src="{% static 'img/tipografia_kurovoid_negativa.png' %}" alt="KUROVOID" class="auth-logo">
+            <img id="authLogo" src="{% static 'img/tipografia_kurovoid_negativa.png' %}" alt="KUROVOID" class="auth-logo">
+            <script>
+                if (savedTheme === 'light') {
+                    document.getElementById('authLogo').src = "{% static 'img/tipografia_kurovoid.png' %}";
+                }
+            </script>
             <p class="auth-subtitle">Iniciar sesión</p>
         </div>
 

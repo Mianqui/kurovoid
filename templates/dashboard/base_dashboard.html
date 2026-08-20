@@ -13,13 +13,13 @@
     <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
-<body class="theme-bg-primary theme-text-primary min-h-screen font-sans">
+<body class="theme-bg-primary text-white min-h-screen font-sans">
     <div class="dash-layout">
         {% comment %}Sidebar{% endcomment %}
         <aside class="dash-sidebar" id="dashSidebar">
             <div class="dash-sidebar-header">
                 <a href="{% url 'dashboard:home' %}">
-                    <img src="{% static 'img/tipografia_kurovoid_negativa.png' %}" alt="KUROVOID" class="h-5 w-auto">
+                    <img id="dashLogo" src="{% static 'img/tipografia_kurovoid_negativa.png' %}" alt="KUROVOID" class="h-5 w-auto">
                 </a>
             </div>
             <nav class="dash-sidebar-nav">
@@ -104,6 +104,11 @@
                         </svg>
                         Ver tienda
                     </a>
+                    <button id="themeToggle" class="p-2 theme-text-secondary hover:text-white transition-colors" title="Cambiar tema">
+                        <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                        </svg>
+                    </button>
                     <form method="post" action="{% url 'users:logout' %}" style="margin:0;">
                         {% csrf_token %}
                         <button type="submit" class="text-sm theme-text-secondary hover:text-white transition-colors cursor-pointer bg-transparent border-none p-0">Cerrar sesión</button>
@@ -115,7 +120,7 @@
             <div id="toast-container" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-3 items-center pointer-events-none w-full max-w-md px-4">
                 {% if messages %}
                 {% for message in messages %}
-                <div class="toast-message rounded-lg px-4 py-3 text-sm font-medium shadow-lg transition-all duration-300 {% if message.tags == 'success' %}bg-emerald-950 border border-emerald-800 text-emerald-400{% elif message.tags == 'error' %}bg-red-950 border border-red-800 text-red-400{% else %}bg-zinc-800 border border-zinc-700 text-zinc-300{% endif %}">
+                <div class="toast-message rounded-lg px-4 py-3 text-sm font-medium shadow-lg transition-all duration-300 {% if message.tags == 'success' %}bg-emerald-950 border border-emerald-800 text-emerald-400{% elif message.tags == 'error' %}bg-red-950 border border-red-800 text-red-400{% else %}theme-bg-primary theme-border text-zinc-300{% endif %}">
                     {{ message }}
                 </div>
                 {% endfor %}
@@ -138,7 +143,7 @@
             } else if (type === 'error') {
                 classes += 'bg-red-950 border border-red-800 text-red-400';
             } else {
-                classes += 'bg-zinc-800 border border-zinc-700 text-zinc-300';
+                classes += 'theme-bg-primary theme-border text-zinc-300';
             }
             toast.className = classes;
             toast.textContent = message;
@@ -162,6 +167,37 @@
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         });
+
+        // --- Theme toggle ---
+        const themeToggleBtn = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const htmlEl = document.documentElement;
+
+        const sunPath = 'M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z';
+        const moonPath = 'M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z';
+        const logoLight = "{% static 'img/tipografia_kurovoid.png' %}";
+        const logoDark = "{% static 'img/tipografia_kurovoid_negativa.png' %}";
+
+        function setTheme(theme) {
+            htmlEl.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            const path = theme === 'dark' ? sunPath : moonPath;
+            themeIcon.querySelector('path').setAttribute('d', path);
+            const dashLogo = document.getElementById('dashLogo');
+            if (dashLogo) dashLogo.src = theme === 'light' ? logoLight : logoDark;
+        }
+
+        function toggleTheme() {
+            const current = htmlEl.getAttribute('data-theme');
+            setTheme(current === 'dark' ? 'light' : 'dark');
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        setTheme(savedTheme);
+
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', toggleTheme);
+        }
     </script>
     {% block extra_js %}{% endblock %}
 </body>
