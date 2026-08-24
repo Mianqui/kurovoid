@@ -1,13 +1,14 @@
+from decimal import Decimal
+from asgiref.sync import sync_to_async
 from catalog.models import Category, Color, Product, Size
 from dashboard.models import ConfiguracionTienda
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Max, Min
 from django.http import JsonResponse
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import aget_object_or_404, get_object_or_404, redirect, render
 from django.views import View
 from django.views.decorators.http import require_POST
-from decimal import Decimal
 
 from .cart import Cart
 
@@ -38,48 +39,65 @@ def cart_detail(request):
 
 
 @require_POST
-def cart_add(request, product_id):
-    cart = Cart(request)
-    product = get_object_or_404(Product, id=product_id, is_active=True)
+async def cart_add(request, product_id):
+    product = await aget_object_or_404(Product, id=product_id, is_active=True)
     quantity = int(request.POST.get("quantity", 1))
     size = request.POST.get("size", "")
     color = request.POST.get("color", "")
-    cart.add(product, quantity, size, color)
+
+    @sync_to_async
+    def _add_to_cart():
+        cart = Cart(request)
+        cart.add(product, quantity, size, color)
+        return str(cart.get_total_price()), len(cart)
+
+    total, count = await _add_to_cart()
     return JsonResponse(
         {
             "success": True,
-            "cart_total": str(cart.get_total_price()),
-            "cart_count": len(cart),
+            "cart_total": total,
+            "cart_count": count,
         }
     )
 
 
 @require_POST
-def cart_remove(request, product_id):
-    cart = Cart(request)
-    cart.remove(product_id)
-    return JsonResponse(
-        {
-            "success": True,
-            "cart_total": str(cart.get_total_price()),
-            "cart_count": len(cart),
-        }
-    )
-
-
-@require_POST
-def cart_update(request, product_id):
-    cart = Cart(request)
-    quantity = int(request.POST.get("quantity", 1))
-    if quantity > 0:
-        cart.update(product_id, quantity)
-    else:
+async def cart_remove(request, product_id):
+    @sync_to_async
+    def _remove_from_cart():
+        cart = Cart(request)
         cart.remove(product_id)
+        return str(cart.get_total_price()), len(cart)
+
+    total, count = await _remove_from_cart()
     return JsonResponse(
         {
             "success": True,
-            "cart_total": str(cart.get_total_price()),
-            "cart_count": len(cart),
+            "cart_total": total,
+            "cart_count": count,
+        }
+    )
+
+
+@require_POST
+async def cart_update(request, product_id):
+    quantity = int(request.POST.get("quantity", 1))
+
+    @sync_to_async
+    def _update_cart():
+        cart = Cart(request)
+        if quantity > 0:
+            cart.update(product_id, quantity)
+        else:
+            cart.remove(product_id)
+        return str(cart.get_total_price()), len(cart)
+
+    total, count = await _update_cart()
+    return JsonResponse(
+        {
+            "success": True,
+            "cart_total": total,
+            "cart_count": count,
         }
     )
 

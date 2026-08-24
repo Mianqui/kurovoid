@@ -1,3 +1,4 @@
+from asgiref.sync import sync_to_async
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -28,3 +29,6 @@ def enviar_email_verificacion(usuario, request):
     )
     email.attach_alternative(cuerpo_html, "text/html")
     email.send(fail_silently=False)
+
+
+enviar_email_verificacion_async = sync_to_async(enviar_email_verificacion, thread_sensitive=True)
