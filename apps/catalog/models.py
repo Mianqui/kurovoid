@@ -75,7 +75,10 @@ class Product(models.Model):
     def main_image(self):
         if hasattr(self, "_main_images") and self._main_images:
             return self._main_images[0]
-        return self.images.filter(is_main=True).first()
+        main = self.images.filter(is_main=True).first()
+        if main:
+            return main
+        return self.images.first()
 
     def __str__(self):
         return self.name

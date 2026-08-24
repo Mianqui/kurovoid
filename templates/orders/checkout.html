@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Checkout | Kurovoid{% endblock %}
+
+{% block content %}
+<section class="module">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-6 col-sm-offset-3">
+                <h1 class="module-title font-alt">Pagar</h1>
+              </div>
+            </div>
+            <hr class="divider-w pt-20">
+            <div class="row">
+              <div class="col-sm-12">
+                <table class="table table-striped table-border checkout-table">
+                  <tbody>
+                    <tr>
+                      <th class="hidden-xs">Artículo</th>
+                      <th>Descripción</th>
+                      <th class="hidden-xs">Precio</th>
+                      <th>Cantidad</th>
+                      <th>Total</th>
+                      <th>Eliminar</th>
+                    </tr>
+                    {% for item in cart %}
+                    <tr>
+                      <td class="hidden-xs"><a href="{% url 'catalog:product_detail' slug=item.product.slug %}"><img src="{% if item.product.main_image %}{{ item.product.main_image.image.url }}{% else %}{% static 'images/shop/product-1.jpg' %}{% endif %}" alt="{{ item.product.name }}"/></a></td>
+                      <td>
+                        <h5 class="product-title font-alt">{{ item.product.name }}</h5>
+                      </td>
+                      <td class="hidden-xs">
+                        <h5 class="product-title font-alt">${{ item.price|floatformat:0|intcomma }}</h5>
+                      </td>
+                      <td>
+                        <input class="form-control" type="number" name="quantity" value="{{ item.quantity }}" max="50" min="1"/>
+                      </td>
+                      <td>
+                        <h5 class="product-title font-alt">${{ item.total_price|floatformat:0|intcomma }}</h5>
+                      </td>
+                      <td class="pr-remove"><a href="#" title="Eliminar" onclick="event.preventDefault(); fetch('{% url 'orders:cart_remove' product_id=item.product.id %}', {method: 'POST', headers: {'X-CSRFToken': '{{ csrf_token }}'}}).then(()=>location.reload())"><i class="fa fa-times"></i></a></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="6">Tu carrito está vacío.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-sm-3">
+                <div class="form-group">
+                  <input class="form-control" type="text" id="" name="" placeholder="Código de cupón"/>
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class="form-group">
+                  <button class="btn btn-round btn-g" type="submit">Aplicar</button>
+                </div>
+              </div>
+              <div class="col-sm-3 col-sm-offset-3">
+                <div class="form-group">
+                  <button class="btn btn-block btn-round btn-d pull-right" type="submit">Actualizar Carrito</button>
+                </div>
+              </div>
+            </div>
+            <hr class="divider-w">
+            <div class="row mt-70">
+              <div class="col-sm-5 col-sm-offset-7">
+                <div class="shop-Cart-totalbox">
+                  <h4 class="font-alt">Total del Carrito</h4>
+                  <table class="table table-striped table-border checkout-table">
+                    <tbody>
+                      <tr>
+                        <th>Subtotal del Carrito :</th>
+                        <td>${{ cart.get_total_price|floatformat:0|intcomma }}</td>
+                      </tr>
+                      <tr>
+                        <th>Total de Envío :</th>
+                        <td>${{ configuracion.precio_envio|floatformat:0|intcomma }}</td>
+                      </tr>
+                      <tr class="shop-Cart-totalprice">
+                        <th>Total :</th>
+                        <td>${{ cart_total_with_shipping|floatformat:0|intcomma }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <button class="btn btn-lg btn-block btn-round btn-d" type="button" onclick="location.href='{% url 'orders:checkout' %}'">Proceder al Pago</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+{% endblock %}

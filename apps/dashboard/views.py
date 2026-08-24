@@ -649,19 +649,36 @@ def ExportPedidosCSV(request):
     return response
 
 
+from .models import ConfiguracionTienda
+from .forms.carousel import PersonalizacionForm
+
 @method_decorator(decorators, name="dispatch")
-class CarouselListView(ListView):
-    model = CarouselImage
-    template_name = "dashboard/carousel_list.html"
-    context_object_name = "images"
+class PersonalizacionView(UpdateView):
+    model = ConfiguracionTienda
+    form_class = PersonalizacionForm
+    template_name = "dashboard/personalizacion.html"
+    success_url = reverse_lazy("dashboard:personalizacion")
+
+    def get_object(self):
+        return ConfiguracionTienda.load()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["carousel_images"] = CarouselImage.objects.all()
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, "Personalización guardada exitosamente.")
+        return super().form_valid(form)
+
 
 @method_decorator(decorators, name="dispatch")
 class CarouselCreateView(CreateView):
     model = CarouselImage
     form_class = CarouselImageForm
     template_name = "dashboard/carousel_form.html"
-    success_url = reverse_lazy("dashboard:carousel_list")
-    
+    success_url = reverse_lazy("dashboard:personalizacion")
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["editing"] = False
@@ -672,8 +689,8 @@ class CarouselUpdateView(UpdateView):
     model = CarouselImage
     form_class = CarouselImageForm
     template_name = "dashboard/carousel_form.html"
-    success_url = reverse_lazy("dashboard:carousel_list")
-    
+    success_url = reverse_lazy("dashboard:personalizacion")
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["editing"] = True
@@ -683,4 +700,5 @@ class CarouselUpdateView(UpdateView):
 class CarouselDeleteView(DeleteView):
     model = CarouselImage
     template_name = "dashboard/carousel_confirm_delete.html"
-    success_url = reverse_lazy("dashboard:carousel_list")
+    success_url = reverse_lazy("dashboard:personalizacion")
+

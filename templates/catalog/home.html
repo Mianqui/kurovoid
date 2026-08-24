@@ -1,183 +1,89 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}Inicio{% endblock %}
+{% extends 'base.html' %}
+{% load static humanize %}
 
 {% block content %}
-
-{% comment %}Hero slider{% endcomment %}
-<section class="hero-section">
-    <div id="heroCarousel" class="hero-carousel">
-        {% for img in carousel_images %}
-        <div class="hero-slide">
-            {% if img.link %}<a href="{{ img.link }}" class="block w-full h-full">{% endif %}
-            <img src="{{ img.image.url }}" alt="{{ img.title }}">
-            {% if img.link %}</a>{% endif %}
-        </div>
-        {% empty %}
-        <div class="hero-slide flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="size-32 opacity-10 theme-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-        </div>
-        {% endfor %}
-    </div>
-    <button id="heroPrev" class="hero-btn hero-btn-prev" aria-label="Anterior">
-        <svg xmlns="http://www.w3.org/2000/svg" class="size-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
-    </button>
-    <button id="heroNext" class="hero-btn hero-btn-next" aria-label="Siguiente">
-        <svg xmlns="http://www.w3.org/2000/svg" class="size-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
-    </button>
-    <div class="hero-dots-container">
-        {% for img in carousel_images %}
-        <button class="hero-dot {% if forloop.first %}is-active{% endif %}" data-index="{{ forloop.counter0 }}" aria-label="Slide {{ forloop.counter }}"></button>
-        {% empty %}
-        <button class="hero-dot is-active" data-index="0" aria-label="Slide 1"></button>
-        {% endfor %}
-    </div>
-    <div class="hero-content">
-        <img src="{% static 'img/tipografia_kurovoid_negativa.png' %}" alt="KUROVOID" class="theme-logo-white hero-logo">
-        <img src="{% static 'img/tipografia_kurovoid.png' %}" alt="KUROVOID" class="theme-logo-black hero-logo">
-        <p class="hero-subtitle">Ropa con identidad. Hecha para los que rompen el molde.</p>
-        <div class="hero-cta-container">
-            <a href="{% url 'catalog:product_list' %}" class="btn-primary btn-primary-large">
-                VER COLECCIÓN
-            </a>
-        </div>
-    </div>
-</section>
-<script>
-(function() {
-    const carousel = document.getElementById('heroCarousel');
-    const slides = document.querySelectorAll('.hero-slide');
-    const dots = document.querySelectorAll('.hero-dot');
-    const prevBtn = document.getElementById('heroPrev');
-    const nextBtn = document.getElementById('heroNext');
-    const section = carousel?.closest('section');
-    if (!slides.length) return;
-    let current = 0;
-    let interval;
-
-    function goTo(index) {
-        if (index === current) return;
-        carousel.style.transform = 'translateX(-' + (index * 100) + '%)';
-        slides.forEach(s => s.classList.remove('is-active'));
-        slides[index].classList.add('is-active');
-        dots.forEach(d => d.classList.remove('is-active'));
-        dots[index].classList.add('is-active');
-        current = index;
-    }
-
-    function nextSlide() { goTo((current + 1) % slides.length); }
-    function prevSlide() { goTo((current - 1 + slides.length) % slides.length); }
-
-    function startAutoplay() {
-        if (interval) clearInterval(interval);
-        interval = setInterval(nextSlide, 5000);
-    }
-
-    function stopAutoplay() {
-        if (interval) clearInterval(interval);
-        interval = null;
-    }
-
-    dots.forEach(dot => dot.addEventListener('click', function() {
-        const idx = parseInt(this.dataset.index);
-        if (idx !== current) goTo(idx);
-        startAutoplay();
-    }));
-    prevBtn?.addEventListener('click', function() { prevSlide(); startAutoplay(); });
-    nextBtn?.addEventListener('click', function() { nextSlide(); startAutoplay(); });
-    section?.addEventListener('mouseenter', stopAutoplay);
-    section?.addEventListener('mouseleave', startAutoplay);
-
-    slides[0]?.classList.add('is-active');
-    startAutoplay();
-})();
-</script>
-
-
-
-{% comment %}New In{% endcomment %}
-<section class="py-16 px-4 theme-bg-secondary">
-    <div class="w-full px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="font-heading text-2xl font-bold">Nuevos Ingresos</h2>
-            <a href="{% url 'catalog:product_list' %}" class="text-sm tracking-wider theme-accent hover:opacity-80 transition-opacity">VER TODO →</a>
-        </div>
-        {% if new_products %}
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8">
-            {% for product in new_products %}
-            <div class="product-card group">
-                <button onclick="toggleFav({{ product.id }}, this); event.stopPropagation();" class="fav-btn product-card-fav-btn new-in-fav-btn" data-product-id="{{ product.id }}">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
-                    </svg>
-                </button>
-                <a href="{% url 'catalog:product_detail' product.slug %}" class="block">
-                    <div class="product-card-img-container">
-                        {% with main_image=product.images.all|first %}
-                        <img src="{% if main_image %}{{ main_image.image.url }}{% else %}{% static 'img/producto-card.jpg' %}{% endif %}" alt="{{ main_image.alt_text|default:product.name }}" class="product-card-img">
-                        {% endwith %}
-                    </div>
-                    <div class="new-in-info">
-                        <p class="new-in-label">NEW IN</p>
-                        <h3 class="product-card-title new-in-title">{{ product.name }}</h3>
-                        <p class="new-in-price">${{ product.price }}</p>
-                    </div>
-                </a>
-            </div>
+      <section class="home-section home-fade home-full-height" id="home">
+        <div class="hero-slider">
+          <ul class="slides">
+            {% for slide in carousel_images %}
+            <li class="bg-dark-30 bg-dark shop-page-header" style="background-image:url('{{ slide.image.url }}');">
+              <div class="titan-caption">
+                <div class="caption-content">
+                  <div class="font-alt mb-30 titan-title-size-1">{{ configuracion.texto_slider_superior|default:"Esto es Kurovoid" }}</div>
+                  <div class="font-alt mb-30 titan-title-size-4">{{ slide.title }}</div>
+                  <div class="font-alt mb-40 titan-title-size-4">{{ configuracion.texto_slider_inferior|default:"Tu destino de moda online" }}</div>
+                  {% if configuracion.slider_link %}
+                  <a class="section-scroll btn btn-border-w btn-round" href="{{ configuracion.slider_link }}">Saber Más</a>
+                  {% endif %}
+                </div>
+              </div>
+            </li>
+            {% empty %}
+            <li class="bg-dark-30 shop-page-header" style="background-color: #333;">
+              <div class="titan-caption">
+                <div class="caption-content">
+                  <div class="font-alt mb-30 titan-title-size-1">{{ configuracion.texto_slider_superior|default:"Esto es Kurovoid" }}</div>
+                  <div class="font-alt mb-30 titan-title-size-4">Bienvenido</div>
+                  <div class="font-alt mb-40 titan-title-size-1">{{ configuracion.texto_slider_inferior|default:"Tu destino de moda online" }}</div>
+                </div>
+              </div>
+            </li>
             {% endfor %}
+          </ul>
         </div>
-        {% else %}
-        <div class="text-center py-12 theme-text-secondary">
-            <p>Próximamente nuevos productos.</p>
-        </div>
-        {% endif %}
-    </div>
-</section>
-
-{% comment %}Valores de marca{% endcomment %}
-<section class="py-20 px-4">
-    <div class="w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h2 class="font-heading text-2xl font-bold mb-12">Hecho con propósito</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            <div class="value-card">
-                <div class="value-icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-6 theme-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" /></svg>
-                </div>
-                <h3 class="value-title">CALIDAD GARANTIZADA</h3>
-                <p class="value-desc">Materiales premium y confección cuidadosa en cada prenda.</p>
+      </section>
+      <div class="main">
+        <section class="module-small">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-6 col-sm-offset-3">
+                <h2 class="module-title font-alt">Lo último en ropa</h2>
+              </div>
             </div>
-            <div class="value-card">
-                <div class="value-icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-6 theme-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <div class="row multi-columns-row">
+              {% for product in new_products %}
+              <div class="col-sm-6 col-md-3 col-lg-3">
+                <div class="shop-item">
+                  <div class="shop-item-image">
+                    <img src="{% if product.main_image %}{{ product.main_image.image.url }}{% else %}{% static 'images/shop/product-1.jpg' %}{% endif %}" alt="{{ product.name }}"/>
+                    <div class="shop-item-detail"><a class="btn btn-round btn-b" href="javascript:void(0)" onclick="comprarWhatsApp('{{ product.name|escapejs }}', '{% url 'catalog:product_detail' slug=product.slug %}')"><span class="icon-basket">Comprar</span></a></div>
+                  </div>
+                  <h4 class="shop-item-title font-alt"><a href="{% url 'catalog:product_detail' slug=product.slug %}">{{ product.name }}</a></h4>${{ product.price|floatformat:0|intcomma }}
                 </div>
-                <h3 class="value-title">ENVÍO RÁPIDO</h3>
-                <p class="value-desc">Entregas en 24-48 horas en todo el país.</p>
+              </div>
+              {% endfor %}
             </div>
-            <div class="value-card">
-                <div class="value-icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="size-6 theme-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+            <div class="row mt-30">
+              <div class="col-sm-12 align-center"><a class="btn btn-b btn-round" href="{% url 'catalog:product_list' %}">Ver todos los productos</a></div>
+            </div>
+          </div>
+        </section>
+        <hr class="divider-w">
+        <section class="module">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-6 col-sm-offset-3">
+                <h2 class="module-title font-alt">Productos Destacados</h2>
+                <div class="module-subtitle font-serif">{{ configuracion.texto_exclusivos_subtitulo|default:"Piezas seleccionadas con los mejores materiales y diseños que definen tu estilo." }}</div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="owl-carousel text-center" data-items="5" data-pagination="false" data-navigation="false">
+                {% for fp in featured_products %}
+                <div class="owl-item">
+                  <div class="col-sm-12">
+                    <div class="ex-product">
+                      <a href="{% url 'catalog:product_detail' slug=fp.slug %}"><img src="{% if fp.main_image %}{{ fp.main_image.image.url }}{% else %}{% static 'images/shop/product-1.jpg' %}{% endif %}" alt="{{ fp.name }}"/></a>
+                      <h4 class="shop-item-title font-alt"><a href="{% url 'catalog:product_detail' slug=fp.slug %}">{{ fp.name }}</a></h4>${{ fp.price|floatformat:0|intcomma }}
+                    </div>
+                  </div>
                 </div>
-                <h3 class="value-title">ATENCIÓN PERSONALIZADA</h3>
-                <p class="value-desc">Soporte directo para cambios, devoluciones y dudas.</p>
+                {% endfor %}
+              </div>
             </div>
-        </div>
-    </div>
-</section>
-
-{% comment %}CTA final{% endcomment %}
-<section class="py-20 px-4 text-center theme-bg-secondary">
-    <div class="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="font-heading text-3xl sm:text-4xl font-bold mb-4">¿Listo para tu próximo look?</h2>
-        <p class="mb-8 theme-text-secondary">Explora nuestra colección y encuentra tu estilo.</p>
-        <div class="flex items-center justify-center gap-4 flex-wrap">
-            <a href="{% url 'catalog:product_list' %}" class="btn-primary btn-primary-large">
-                IR A LA TIENDA
-            </a>
-        </div>
-    </div>
-</section>
+          </div>
+        </section>
+        
+        <hr class="divider-d">
 
 {% endblock %}

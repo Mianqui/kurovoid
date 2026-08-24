@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Productos | Kurovoid{% endblock %}
+
+{% block content %}
+{% if configuracion.imagen_fondo_productos %}
+<section class="module bg-dark-60 shop-page-header" data-background="{{ configuracion.imagen_fondo_productos.url }}">
+{% else %}
+<section class="module shop-page-header" style="background-color: #333;">
+{% endif %}
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-6 col-sm-offset-3">
+                <h2 class="module-title font-alt">Productos de Tienda</h2>
+                <div class="module-subtitle font-serif">{{ configuracion.texto_productos_subtitulo|default:"Explora nuestra colección completa y encuentra las prendas que se adaptan a tu personalidad." }}</div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="module-small">
+          <div class="container">
+            <form class="row">
+              <div class="col-sm-4 mb-sm-20">
+                <select class="form-control">
+                  <option selected="selected">Orden por defecto</option>
+                  <option>Popular</option>
+                  <option>Último</option>
+                  <option>Precio Medio</option>
+                  <option>Precio Alto</option>
+                  <option>Precio Bajo</option>
+                </select>
+              </div>
+              <div class="col-sm-2 mb-sm-20">
+                <select class="form-control">
+                  <option selected="selected">Hombre</option>
+                  <option>Mujer</option>
+                </select>
+              </div>
+              <div class="col-sm-3 mb-sm-20">
+                <select class="form-control" name="category">
+                  <option value="" {% if not request.GET.category %}selected="selected"{% endif %}>Todo</option>
+                  {% for c in categories %}
+                  <option value="{{ c.slug }}" {% if request.GET.category == c.slug %}selected="selected"{% endif %}>{{ c.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+              <div class="col-sm-3">
+                <button class="btn btn-block btn-round btn-g" type="submit">Aplicar</button>
+              </div>
+            </form>
+          </div>
+        </section>
+        <hr class="divider-w">
+        <section class="module-small">
+          <div class="container">
+            <div class="row multi-columns-row">
+              {% for product in products %}
+              <div class="col-sm-6 col-md-3 col-lg-3">
+                <div class="shop-item">
+                  <div class="shop-item-image">
+                    <img src="{% if product.main_image %}{{ product.main_image.image.url }}{% else %}{% static 'images/shop/product-1.jpg' %}{% endif %}" alt="{{ product.name }}"/>
+                    <div class="shop-item-detail"><a class="btn btn-round btn-b" href="#" onclick="event.preventDefault(); comprarWhatsApp('{{ product.name|escapejs }}', '{% url 'catalog:product_detail' slug=product.slug %}');">
+                        <span class="icon-basket">Comprar</span></a></div>
+                  </div>
+                  <h4 class="shop-item-title font-alt"><a href="{% url 'catalog:product_detail' slug=product.slug %}">{{ product.name }}</a></h4>${{ product.price|floatformat:0|intcomma }}
+                </div>
+              </div>
+              {% empty %}
+              <div class="col-sm-12"><p>No hay productos disponibles.</p></div>
+              {% endfor %}
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+                <div class="pagination font-alt">
+                  {% if page_obj.has_previous %}
+                  <a href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"><i class="fa fa-angle-left"></i></a>
+                  {% endif %}
+                  
+                  {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                      <a class="active" href="#">{{ num }}</a>
+                    {% else %}
+                      <a href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">{{ num }}</a>
+                    {% endif %}
+                  {% endfor %}
+                  
+                  {% if page_obj.has_next %}
+                  <a href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}"><i class="fa fa-angle-right"></i></a>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        
+{% endblock %}

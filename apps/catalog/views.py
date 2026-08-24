@@ -3,12 +3,13 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, ListView, TemplateView
 
 from .models import Category, Color, Product, Size, CarouselImage
+from dashboard.models import ConfiguracionTienda
 
 
 # Lista de productos con filtros y paginación
 class ProductListView(ListView):
     model = Product
-    template_name = "catalog/product_list.html"
+    template_name = "catalog/shop_product_list.html"
     context_object_name = "products"
     paginate_by = 12
 
@@ -54,8 +55,15 @@ class ProductListView(ListView):
         context["selected"] = {
             k: v for k, v in self.request.GET.items() if v
         }
+        
+        try:
+            config = ConfiguracionTienda.load()
+        except Exception:
+            class DummyConfig:
+                imagen_fondo_productos = None
+            config = DummyConfig()
+        context["configuracion"] = config
         return context
-
 
 # Vista detalle de un producto por slug
 class ProductDetailView(DetailView):
@@ -79,10 +87,7 @@ class ProductDetailView(DetailView):
             min_price=Min("price"), max_price=Max("price")
         )
         context["selected"] = {}
-        # Productos de la misma categoría (excluyendo el actual)
-        context["related_products"] = Product.objects.filter(
-            category=product.category, is_active=True
-        ).exclude(id=product.id)[:4]
+        context["featured_products"] = Product.objects.filter(is_active=True).exclude(pk=self.object.pk).order_by("?")[:5]
         return context
 
 
@@ -129,8 +134,12 @@ class HomeView(TemplateView):
         context["selected"] = {
             k: v for k, v in self.request.GET.items() if v
         }
-        context["new_products"] = Product.objects.filter(is_active=True).order_by(
-            "-created_at"
-        )[:8]
+        context["new_products"] = Product.objects.filter(is_active=True).order_by("-created_at")[:8]
+        # Productos destacados aleatorios
+        context["featured_products"] = Product.objects.filter(is_active=True).order_by("?")[:5]
         context["carousel_images"] = CarouselImage.objects.filter(is_active=True)
+        try:
+            context["configuracion"] = ConfiguracionTienda.load()
+        except Exception:
+            context["configuracion"] = None
         return context

@@ -6,7 +6,7 @@
 {% block content %}
 <div class="max-w-2xl mx-auto">
   <div class="flex items-center justify-center gap-3 mb-6 relative">
-    <a href="{% url 'dashboard:carousel_list' %}" class="absolute left-0 p-2 theme-text-secondary hover:text-white hover:bg-zinc-800 rounded-lg transition-colors">
+    <a href="{% url 'dashboard:personalizacion' %}" class="absolute left-0 p-2 theme-text-secondary hover:text-white hover:bg-zinc-800 rounded-lg transition-colors">
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
       </svg>
@@ -43,15 +43,6 @@
     </div>
 
     <div>
-      <label class="dash-label">{{ form.link.label }}</label>
-      {{ form.link }}
-      <p class="mt-1 text-xs theme-text-secondary">{{ form.link.help_text }}</p>
-      {% if form.link.errors %}
-      <p class="mt-1 text-xs text-red-400">{{ form.link.errors.0 }}</p>
-      {% endif %}
-    </div>
-    
-    <div>
       <label class="dash-label">{{ form.order.label }}</label>
       {{ form.order }}
       {% if form.order.errors %}
@@ -68,7 +59,7 @@
       <button type="submit" class="px-6 py-2 theme-accent-bg rounded-lg text-sm font-medium hover:opacity-80 transition-opacity">
         {% if editing %}Guardar cambios{% else %}Subir imagen{% endif %}
       </button>
-      <a href="{% url 'dashboard:carousel_list' %}" class="px-4 py-2 theme-text-secondary hover:text-white transition-colors text-sm">Cancelar</a>
+      <a href="{% url 'dashboard:personalizacion' %}" class="px-4 py-2 theme-text-secondary hover:text-white transition-colors text-sm">Cancelar</a>
     </div>
   </form>
 </div>

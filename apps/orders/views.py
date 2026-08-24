@@ -1,21 +1,27 @@
+from catalog.models import Category, Color, Product, Size
+from dashboard.models import ConfiguracionTienda
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Min, Max
+from django.db.models import Max, Min
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils.decorators import method_decorator
-from django.views.decorators.http import require_POST
 from django.views import View
-
-from catalog.models import Category, Color, Product, Size
+from django.views.decorators.http import require_POST
+from decimal import Decimal
 
 from .cart import Cart
 
 
-# Página del carrito
 def cart_detail(request):
     cart = Cart(request)
+    try:
+        config = ConfiguracionTienda.load()
+    except Exception:
+
+        class DummyConfig:
+            precio_envio = 0
+
+        config = DummyConfig()
     context = {
         "cart": cart,
         "categories": Category.objects.all(),
@@ -25,11 +31,12 @@ def cart_detail(request):
             min_price=Min("price"), max_price=Max("price")
         ),
         "selected": {},
+        "configuracion": config,
+        "cart_total_with_shipping": cart.get_total_price() + Decimal(str(config.precio_envio)),
     }
     return render(request, "orders/cart_detail.html", context)
 
 
-# Agrega producto vía POST (AJAX)
 @require_POST
 def cart_add(request, product_id):
     cart = Cart(request)
@@ -47,7 +54,6 @@ def cart_add(request, product_id):
     )
 
 
-# Elimina producto vía POST (AJAX)
 @require_POST
 def cart_remove(request, product_id):
     cart = Cart(request)
@@ -61,7 +67,6 @@ def cart_remove(request, product_id):
     )
 
 
-# Actualiza cantidad vía POST (AJAX)
 @require_POST
 def cart_update(request, product_id):
     cart = Cart(request)
@@ -106,4 +111,16 @@ class CheckoutView(LoginRequiredMixin, View):
         if not cart:
             messages.info(request, "Tu carrito está vacío.")
             return redirect("orders:cart_detail")
-        return render(request, "orders/checkout.html", {"cart": cart})
+        try:
+            config = ConfiguracionTienda.load()
+        except Exception:
+
+            class DummyConfig:
+                precio_envio = 0
+
+            config = DummyConfig()
+            
+        cart_total_with_shipping = cart.get_total_price() + Decimal(str(config.precio_envio))
+        return render(
+            request, "orders/checkout.html", {"cart": cart, "configuracion": config, "cart_total_with_shipping": cart_total_with_shipping}
+        )
