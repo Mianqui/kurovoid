@@ -2,7 +2,6 @@ import ipaddress
 
 from django.http import Http404
 
-
 PRIVATE_NETWORKS = [
     ipaddress.ip_network("127.0.0.0/8"),
     ipaddress.ip_network("10.0.0.0/8"),
@@ -13,7 +12,7 @@ PRIVATE_NETWORKS = [
     ipaddress.ip_network("fc00::/7"),
 ]
 
-PROTECTED_PREFIXES = ("/admin/", "/dashboard/", "/auth/")
+PROTECTED_PREFIXES = ("/admin", "/dashboard", "/auth")
 
 
 class LocalNetworkOnlyMiddleware:
@@ -21,16 +20,22 @@ class LocalNetworkOnlyMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if any(request.path.startswith(p) for p in PROTECTED_PREFIXES):
+        path = request.path_info
+        if any(path == p or path.startswith(f"{p}/") for p in PROTECTED_PREFIXES):
             ip = self._get_client_ip(request)
             if not self._is_private(ip):
                 raise Http404
         return self.get_response(request)
 
     def _get_client_ip(self, request):
+        cf_ip = request.META.get("HTTP_CF_CONNECTING_IP")
+        if cf_ip:
+            return cf_ip.strip()
+
         forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
         if forwarded:
-            return forwarded.split(",")[-1].strip()
+            return forwarded.split(",")[0].strip()
+
         return request.META.get("REMOTE_ADDR", "")
 
     def _is_private(self, ip_str):
