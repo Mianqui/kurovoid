@@ -405,21 +405,23 @@ console.log('%c Proudly Crafted with ZiOn.', 'background: #222; color: #bada55')
                 navigation = false;
             }
 
-            // Build carousel
+            var childCount = $(this).children().length;
+            var shouldLoop = childCount > items;
+
             $(this).owlCarousel( {
                 navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
                 nav: navigation,
                 dots: pagination,
-                loop: true,
+                loop: shouldLoop,
                 dotsSpeed: 400,
                 items: items,
                 navSpeed: 300,
-                autoplay: true,
+                autoplay: shouldLoop,
                 autoplayTimeout: 4000,
                 autoplayHoverPause: true,
                 smartSpeed: 500,
                 fluidSpeed: 500
-});
+            });
 
         });
 

@@ -24,15 +24,17 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = [
-            "name", "category", "description", "price",
-            "stock", "sizes", "colors", "is_active",
+            "name", "category", "gender", "description", "price",
+            "stock", "sizes", "colors", "is_featured", "is_active",
         ]
         widgets = {
             "name": forms.TextInput(attrs={"class": INPUT_CLASSES, "placeholder": "Nombre del producto"}),
             "category": forms.Select(attrs={"class": SELECT_CLASSES}),
+            "gender": forms.Select(attrs={"class": SELECT_CLASSES}),
             "description": forms.Textarea(attrs={"class": TEXTAREA_CLASSES, "rows": 4, "placeholder": "Descripción del producto..."}),
             "price": forms.NumberInput(attrs={"class": INPUT_CLASSES, "placeholder": "0.00"}),
             "stock": forms.NumberInput(attrs={"class": INPUT_CLASSES, "placeholder": "0"}),
+            "is_featured": forms.CheckboxInput(attrs={"class": CHECKBOX_CLASSES}),
             "is_active": forms.CheckboxInput(attrs={"class": CHECKBOX_CLASSES}),
         }
 

@@ -51,8 +51,23 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField(default=0)
+    GENDER_CHOICES = [
+        ("hombre", "Hombre"),
+        ("mujer", "Mujer"),
+    ]
+    gender = models.CharField(
+        max_length=10,
+        choices=GENDER_CHOICES,
+        default="hombre",
+        verbose_name="Género",
+    )
     sizes = models.ManyToManyField(Size, blank=True)
     colors = models.ManyToManyField(Color, blank=True)
+    is_featured = models.BooleanField(
+        default=False,
+        verbose_name="Destacado",
+        help_text="Marcar para mostrar en la sección de Productos Destacados del Inicio",
+    )
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

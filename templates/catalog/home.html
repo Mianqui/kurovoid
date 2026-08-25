@@ -58,6 +58,7 @@
             </div>
           </div>
         </section>
+        {% if featured_products %}
         <hr class="divider-w">
         <section class="module">
           <div class="container">
@@ -68,6 +69,7 @@
               </div>
             </div>
             <div class="row">
+              {% if featured_products|length > 4 %}
               <div class="owl-carousel text-center" data-items="5" data-pagination="false" data-navigation="false">
                 {% for fp in featured_products %}
                 <div class="owl-item">
@@ -80,9 +82,22 @@
                 </div>
                 {% endfor %}
               </div>
+              {% else %}
+              <div class="text-center" style="display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap; gap: 30px;">
+                {% for fp in featured_products %}
+                <div style="max-width: 220px; flex: 0 0 200px;">
+                  <div class="ex-product" style="opacity: 1;">
+                    <a href="{% url 'catalog:product_detail' slug=fp.slug %}"><img src="{% if fp.main_image %}{{ fp.main_image.image.url }}{% else %}{% static 'images/producto-card.jpg' %}{% endif %}" alt="{{ fp.name }}" style="width: 100%; aspect-ratio: 500 / 346; object-fit: cover; border-radius: 4px;"/></a>
+                    <h4 class="shop-item-title font-alt" style="margin-top: 10px;"><a href="{% url 'catalog:product_detail' slug=fp.slug %}">{{ fp.name }}</a></h4>${{ fp.price|floatformat:0|intcomma }}
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %}
             </div>
           </div>
         </section>
+        {% endif %}
         
         <hr class="divider-d">
 

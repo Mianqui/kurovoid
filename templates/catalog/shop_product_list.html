@@ -20,26 +20,26 @@
         </section>
         <section class="module-small">
           <div class="container">
-            <form class="row">
+            <form class="row" method="get">
               <div class="col-sm-4 mb-sm-20">
-                <select class="form-control">
-                  <option selected="selected">Orden por defecto</option>
-                  <option>Popular</option>
-                  <option>Último</option>
-                  <option>Precio Medio</option>
-                  <option>Precio Alto</option>
-                  <option>Precio Bajo</option>
+                <select class="form-control" name="ordering">
+                  <option value="" {% if not request.GET.ordering %}selected="selected"{% endif %}>Orden por defecto</option>
+                  <option value="popular" {% if request.GET.ordering == 'popular' %}selected="selected"{% endif %}>Popular</option>
+                  <option value="latest" {% if request.GET.ordering == 'latest' %}selected="selected"{% endif %}>Último</option>
+                  <option value="price_asc" {% if request.GET.ordering == 'price_asc' %}selected="selected"{% endif %}>Precio Bajo</option>
+                  <option value="price_desc" {% if request.GET.ordering == 'price_desc' %}selected="selected"{% endif %}>Precio Alto</option>
                 </select>
               </div>
               <div class="col-sm-2 mb-sm-20">
-                <select class="form-control">
-                  <option selected="selected">Hombre</option>
-                  <option>Mujer</option>
+                <select class="form-control" name="gender">
+                  <option value="" {% if not request.GET.gender %}selected="selected"{% endif %}>Todos (Género)</option>
+                  <option value="hombre" {% if request.GET.gender == 'hombre' %}selected="selected"{% endif %}>Hombre</option>
+                  <option value="mujer" {% if request.GET.gender == 'mujer' %}selected="selected"{% endif %}>Mujer</option>
                 </select>
               </div>
               <div class="col-sm-3 mb-sm-20">
                 <select class="form-control" name="category">
-                  <option value="" {% if not request.GET.category %}selected="selected"{% endif %}>Todo</option>
+                  <option value="" {% if not request.GET.category %}selected="selected"{% endif %}>Todas las Categorías</option>
                   {% for c in categories %}
                   <option value="{{ c.slug }}" {% if request.GET.category == c.slug %}selected="selected"{% endif %}>{{ c.name }}</option>
                   {% endfor %}

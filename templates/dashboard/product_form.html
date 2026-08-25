@@ -31,10 +31,17 @@
       {% for error in form.name.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
     </div>
 
-    <div>
-      <label class="dash-label">Categoría</label>
-      {{ form.category }}
-      {% for error in form.category.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="dash-label">Categoría</label>
+        {{ form.category }}
+        {% for error in form.category.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+      </div>
+      <div>
+        <label class="dash-label">Género</label>
+        {{ form.gender }}
+        {% for error in form.gender.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+      </div>
     </div>
 
     <div>
@@ -124,10 +131,24 @@
       {% for error in form.colors.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
     </div>
 
-    <div class="flex items-center gap-3">
-      {{ form.is_active }}
-      <label class="text-sm" for="{{ form.is_active.id_for_label }}">Producto activo</label>
-      {% for error in form.is_active.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+    <div class="space-y-3 pt-2">
+      <div class="flex items-center gap-3 p-3 rounded-lg border border-amber-500/20 bg-amber-500/5">
+        {{ form.is_featured }}
+        <label class="text-sm cursor-pointer flex flex-wrap items-center gap-1.5" for="{{ form.is_featured.id_for_label }}">
+          <svg class="w-4 h-4 text-amber-400 shrink-0" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+          </svg>
+          <span class="font-medium text-amber-300">Destacar producto</span>
+          <span class="text-xs theme-text-secondary">(Aparecerá en la sección de Productos Destacados del Inicio)</span>
+        </label>
+        {% for error in form.is_featured.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+      </div>
+
+      <div class="flex items-center gap-3 px-1">
+        {{ form.is_active }}
+        <label class="text-sm cursor-pointer" for="{{ form.is_active.id_for_label }}">Producto activo</label>
+        {% for error in form.is_active.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+      </div>
     </div>
 
     <div class="flex items-center gap-3 pt-4">

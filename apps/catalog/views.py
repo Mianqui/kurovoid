@@ -15,13 +15,13 @@ class ProductListView(ListView):
 
     def get_queryset(self):
         qs = Product.objects.filter(is_active=True).select_related("category")
-        # Filtros desde GET
         category_slug = self.request.GET.get("category")
+        gender = self.request.GET.get("gender")
+        ordering = self.request.GET.get("ordering")
         size_name = self.request.GET.get("size")
         color_name = self.request.GET.get("color")
         min_price = self.request.GET.get("min_price")
         max_price = self.request.GET.get("max_price")
-        # Filtro de favoritos (IDs enviados desde cookie via JS)
         fav_ids = self.request.GET.get("fav_ids")
         if self.request.GET.get("favs") and fav_ids:
             try:
@@ -33,6 +33,8 @@ class ProductListView(ListView):
             qs = qs.none()
         if category_slug:
             qs = qs.filter(category__slug=category_slug)
+        if gender in ["hombre", "mujer"]:
+            qs = qs.filter(gender=gender)
         if size_name:
             qs = qs.filter(sizes__name=size_name)
         if color_name:
@@ -41,6 +43,14 @@ class ProductListView(ListView):
             qs = qs.filter(price__gte=min_price)
         if max_price:
             qs = qs.filter(price__lte=max_price)
+        if ordering == "popular":
+            qs = qs.order_by("-is_featured", "-created_at")
+        elif ordering == "latest":
+            qs = qs.order_by("-created_at")
+        elif ordering == "price_asc":
+            qs = qs.order_by("price")
+        elif ordering == "price_desc":
+            qs = qs.order_by("-price")
         return qs.distinct()
 
     def get_context_data(self, **kwargs):
@@ -102,9 +112,22 @@ class CategoryView(ListView):
         return get_object_or_404(Category, slug=self.kwargs["slug"])
 
     def get_queryset(self):
-        return Product.objects.filter(
+        qs = Product.objects.filter(
             category=self.get_category(), is_active=True
         ).select_related("category")
+        gender = self.request.GET.get("gender")
+        ordering = self.request.GET.get("ordering")
+        if gender in ["hombre", "mujer"]:
+            qs = qs.filter(gender=gender)
+        if ordering == "popular":
+            qs = qs.order_by("-is_featured", "-created_at")
+        elif ordering == "latest":
+            qs = qs.order_by("-created_at")
+        elif ordering == "price_asc":
+            qs = qs.order_by("price")
+        elif ordering == "price_desc":
+            qs = qs.order_by("-price")
+        return qs.distinct()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -142,8 +165,7 @@ class HomeView(TemplateView):
             k: v for k, v in self.request.GET.items() if v
         }
         context["new_products"] = Product.objects.filter(is_active=True).order_by("-created_at")[:8]
-        # Productos destacados aleatorios
-        context["featured_products"] = Product.objects.filter(is_active=True).order_by("?")[:5]
+        context["featured_products"] = Product.objects.filter(is_active=True, is_featured=True).order_by("-created_at")
         context["carousel_images"] = CarouselImage.objects.filter(is_active=True)
         try:
             context["configuracion"] = ConfiguracionTienda.load()

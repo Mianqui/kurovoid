@@ -641,14 +641,16 @@ def ExportProductosCSV(request):
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = 'attachment; filename="productos.csv"'
     writer = csv.writer(response)
-    writer.writerow(["ID", "Nombre", "Categoría", "Precio", "Stock", "Activo", "Creado"])
+    writer.writerow(["ID", "Nombre", "Categoría", "Género", "Precio", "Stock", "Destacado", "Activo", "Creado"])
     for p in Product.objects.select_related("category").iterator():
         writer.writerow([
             p.id,
             p.name,
-            p.category.name,
+            p.category.name if p.category else "",
+            p.get_gender_display(),
             p.price,
             p.stock,
+            "Sí" if p.is_featured else "No",
             "Sí" if p.is_active else "No",
             p.created_at.strftime("%Y-%m-%d") if p.created_at else "",
         ])
