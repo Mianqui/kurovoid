@@ -87,7 +87,7 @@
                 {% for fp in featured_products %}
                 <div style="max-width: 220px; flex: 0 0 200px;">
                   <div class="ex-product" style="opacity: 1;">
-                    <a href="{% url 'catalog:product_detail' slug=fp.slug %}"><img src="{% if fp.main_image %}{{ fp.main_image.image.url }}{% else %}{% static 'images/producto-card.jpg' %}{% endif %}" alt="{{ fp.name }}" style="width: 100%; aspect-ratio: 500 / 346; object-fit: cover; border-radius: 4px;"/></a>
+                    <a href="{% url 'catalog:product_detail' slug=fp.slug %}"><img src="{% if fp.main_image %}{{ fp.main_image.image.url }}{% else %}{% static 'images/producto-card.jpg' %}{% endif %}" alt="{{ fp.name }}" style="width: 100%; border-radius: 4px;"/></a>
                     <h4 class="shop-item-title font-alt" style="margin-top: 10px;"><a href="{% url 'catalog:product_detail' slug=fp.slug %}">{{ fp.name }}</a></h4>${{ fp.price|floatformat:0|intcomma }}
                   </div>
                 </div>

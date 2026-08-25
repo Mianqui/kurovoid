@@ -2492,10 +2492,6 @@ Google map
 
 .shop-item-image img {
   width: 100%;
-  aspect-ratio: 500 / 346;
-  object-fit: cover;
-  object-position: center;
-  display: block;
 }
 
 .shop-item-detail,
@@ -2556,14 +2552,6 @@ Google map
 
 .ex-product:hover {
   opacity: 1;
-}
-
-.ex-product img {
-  width: 100%;
-  aspect-ratio: 500 / 346;
-  object-fit: cover;
-  object-position: center;
-  display: block;
 }
 
 /*--------------------------------------------------------------
