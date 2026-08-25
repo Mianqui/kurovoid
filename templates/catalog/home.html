@@ -45,7 +45,7 @@
               <div class="col-sm-6 col-md-3 col-lg-3">
                 <div class="shop-item">
                   <div class="shop-item-image">
-                    <img src="{% if product.main_image %}{{ product.main_image.image.url }}{% else %}{% static 'images/shop/product-1.jpg' %}{% endif %}" alt="{{ product.name }}"/>
+                    <img src="{% if product.main_image %}{{ product.main_image.image.url }}{% else %}{% static 'images/producto-card.jpg' %}{% endif %}" alt="{{ product.name }}"/>
                     <div class="shop-item-detail"><a class="btn btn-round btn-b" href="javascript:void(0)" onclick="comprarWhatsApp('{{ product.name|escapejs }}', '{% url 'catalog:product_detail' slug=product.slug %}')"><span class="icon-basket">Comprar</span></a></div>
                   </div>
                   <h4 class="shop-item-title font-alt"><a href="{% url 'catalog:product_detail' slug=product.slug %}">{{ product.name }}</a></h4>${{ product.price|floatformat:0|intcomma }}
@@ -73,7 +73,7 @@
                 <div class="owl-item">
                   <div class="col-sm-12">
                     <div class="ex-product">
-                      <a href="{% url 'catalog:product_detail' slug=fp.slug %}"><img src="{% if fp.main_image %}{{ fp.main_image.image.url }}{% else %}{% static 'images/shop/product-1.jpg' %}{% endif %}" alt="{{ fp.name }}"/></a>
+                      <a href="{% url 'catalog:product_detail' slug=fp.slug %}"><img src="{% if fp.main_image %}{{ fp.main_image.image.url }}{% else %}{% static 'images/producto-card.jpg' %}{% endif %}" alt="{{ fp.name }}"/></a>
                       <h4 class="shop-item-title font-alt"><a href="{% url 'catalog:product_detail' slug=fp.slug %}">{{ fp.name }}</a></h4>${{ fp.price|floatformat:0|intcomma }}
                     </div>
                   </div>

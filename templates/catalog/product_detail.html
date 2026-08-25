@@ -13,7 +13,7 @@
                   <img src="{{ product.main_image.image.url }}" alt="{{ product.name }}"/>
                 </a>
                 {% else %}
-                <a class="gallery" href="{% static 'images/shop/product-7.jpg' %}"><img src="{% static 'images/shop/product-7.jpg' %}" alt="Single Product Image"/></a>
+                <a class="gallery" href="{% static 'images/producto-card.jpg' %}"><img src="{% static 'images/producto-card.jpg' %}" alt="Single Product Image"/></a>
                 {% endif %}
                 <ul class="product-gallery">
                   {% for img in product.images.all %}
