@@ -14,14 +14,14 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView, TemplateView, CreateView, UpdateView, DeleteView
 
-from catalog.models import Category as CategoryModel, Product, ProductImage, CarouselImage
+from catalog.models import Category as CategoryModel, Product, ProductImage, CarouselImage, Color, Size
 from orders.models import Pedido, PedidoItem
-
-from .forms.category import CategoryForm
 
 from .forms.category import CategoryForm
 from .forms.product import ProductForm
 from .forms.carousel import CarouselImageForm
+from .forms.color import ColorForm
+from .forms.size import SizeForm
 
 from django.conf import settings
 decorators = [login_required, staff_member_required(login_url=settings.LOGIN_URL)]
@@ -82,9 +82,28 @@ class ProductCreateView(CreateView):
     template_name = "dashboard/product_form.html"
     success_url = reverse_lazy("dashboard:product_list")
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["editing"] = False
+        context["available_colors"] = Color.objects.all().order_by("name")
+        context["available_sizes"] = Size.objects.all().order_by("name")
+        context["selected_color_ids"] = []
+        context["selected_size_ids"] = []
+        return context
+
     def form_valid(self, form):
+        self.object = form.save()
+        files = self.request.FILES.getlist("images") or self.request.FILES.getlist("image")
+        for idx, file in enumerate(files):
+            ProductImage.objects.create(
+                product=self.object,
+                image=file,
+                is_main=(idx == 0),
+                alt_text=self.object.name,
+                orden=idx,
+            )
         messages.success(self.request, "Producto creado exitosamente.")
-        return super().form_valid(form)
+        return redirect(self.get_success_url())
 
 
 @method_decorator(decorators, name="dispatch")
@@ -96,26 +115,39 @@ class ProductUpdateView(UpdateView):
     success_url = reverse_lazy("dashboard:product_list")
     pk_url_kwarg = "pk"
 
-    def get_initial(self):
-        initial = super().get_initial()
-        product = self.get_object()
-        main_img = product.images.filter(is_main=True).first()
-        if main_img:
-            initial["image"] = main_img.image
-        return initial
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        product = self.get_object()
         context["editing"] = True
-        context["main_image"] = self.get_object().images.filter(is_main=True).first()
+        context["main_image"] = product.images.filter(is_main=True).first()
         context["product_images"] = (
-            self.get_object().images.all().order_by("orden", "id")
+            product.images.all().order_by("orden", "id")
         )
+        context["available_colors"] = Color.objects.all().order_by("name")
+        context["available_sizes"] = Size.objects.all().order_by("name")
+        context["selected_color_ids"] = list(product.colors.values_list("id", flat=True))
+        context["selected_size_ids"] = list(product.sizes.values_list("id", flat=True))
         return context
 
     def form_valid(self, form):
+        self.object = form.save()
+        files = self.request.FILES.getlist("images") or self.request.FILES.getlist("image")
+        if files:
+            has_main = self.object.images.filter(is_main=True).exists()
+            curr_count = self.object.images.count()
+            for idx, file in enumerate(files):
+                is_main = not has_main if idx == 0 else False
+                if is_main:
+                    has_main = True
+                ProductImage.objects.create(
+                    product=self.object,
+                    image=file,
+                    is_main=is_main,
+                    alt_text=self.object.name,
+                    orden=curr_count + idx,
+                )
         messages.success(self.request, "Producto actualizado exitosamente.")
-        return super().form_valid(form)
+        return redirect(self.get_success_url())
 
 
 @method_decorator(decorators, name="dispatch")
@@ -701,4 +733,200 @@ class CarouselDeleteView(DeleteView):
     model = CarouselImage
     template_name = "dashboard/carousel_confirm_delete.html"
     success_url = reverse_lazy("dashboard:personalizacion")
+
+
+# ==========================================
+# GESTIÓN DE COLORES
+# ==========================================
+@method_decorator([login_required, staff_member_required(login_url=settings.LOGIN_URL)], name="dispatch")
+class ColorListView(ListView):
+    model = Color
+    template_name = "dashboard/color_list.html"
+    context_object_name = "colores"
+
+    def get_queryset(self):
+        return Color.objects.annotate(product_count=Count("product")).order_by("name")
+
+
+@method_decorator([login_required, staff_member_required(login_url=settings.LOGIN_URL)], name="dispatch")
+class ColorCreateView(CreateView):
+    model = Color
+    form_class = ColorForm
+    template_name = "dashboard/color_form.html"
+    success_url = reverse_lazy("dashboard:color_list")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Color creado exitosamente.")
+        return super().form_valid(form)
+
+
+@method_decorator([login_required, staff_member_required(login_url=settings.LOGIN_URL)], name="dispatch")
+class ColorUpdateView(UpdateView):
+    model = Color
+    form_class = ColorForm
+    template_name = "dashboard/color_form.html"
+    context_object_name = "color"
+    success_url = reverse_lazy("dashboard:color_list")
+    pk_url_kwarg = "pk"
+
+    def form_valid(self, form):
+        messages.success(self.request, "Color actualizado.")
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["editing"] = True
+        return context
+
+
+@method_decorator([login_required, staff_member_required(login_url=settings.LOGIN_URL)], name="dispatch")
+class ColorDeleteView(DeleteView):
+    model = Color
+    template_name = "dashboard/color_confirm_delete.html"
+    context_object_name = "color"
+    success_url = reverse_lazy("dashboard:color_list")
+    pk_url_kwarg = "pk"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        color = self.get_object()
+        context["product_count"] = color.product_set.count()
+        context["has_products"] = context["product_count"] > 0
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, "Color eliminado.")
+        return super().form_valid(form)
+
+
+@require_POST
+@login_required
+@staff_member_required(login_url=settings.LOGIN_URL)
+def color_api_create(request):
+    import json
+    try:
+        data = json.loads(request.body)
+    except Exception:
+        data = request.POST
+
+    name = data.get("name", "").strip()
+    hex_code = data.get("hex_code", "").strip()
+
+    if not name:
+        return JsonResponse({"success": False, "error": "El nombre del color es obligatorio."}, status=400)
+
+    if not hex_code:
+        hex_code = "#000000"
+    elif not hex_code.startswith("#"):
+        hex_code = "#" + hex_code
+
+    hex_code = hex_code.upper()
+
+    color, created = Color.objects.get_or_create(
+        name=name,
+        defaults={"hex_code": hex_code}
+    )
+    if not created and hex_code:
+        color.hex_code = hex_code
+        color.save(update_fields=["hex_code"])
+
+    return JsonResponse({
+        "success": True,
+        "color": {
+            "id": color.id,
+            "name": color.name,
+            "hex_code": color.hex_code,
+        }
+    })
+
+
+# ==========================================
+# GESTIÓN DE TALLAS
+# ==========================================
+@method_decorator([login_required, staff_member_required(login_url=settings.LOGIN_URL)], name="dispatch")
+class SizeListView(ListView):
+    model = Size
+    template_name = "dashboard/size_list.html"
+    context_object_name = "tallas"
+
+    def get_queryset(self):
+        return Size.objects.annotate(product_count=Count("product")).order_by("name")
+
+
+@method_decorator([login_required, staff_member_required(login_url=settings.LOGIN_URL)], name="dispatch")
+class SizeCreateView(CreateView):
+    model = Size
+    form_class = SizeForm
+    template_name = "dashboard/size_form.html"
+    success_url = reverse_lazy("dashboard:size_list")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Talla creada exitosamente.")
+        return super().form_valid(form)
+
+
+@method_decorator([login_required, staff_member_required(login_url=settings.LOGIN_URL)], name="dispatch")
+class SizeUpdateView(UpdateView):
+    model = Size
+    form_class = SizeForm
+    template_name = "dashboard/size_form.html"
+    context_object_name = "size"
+    success_url = reverse_lazy("dashboard:size_list")
+    pk_url_kwarg = "pk"
+
+    def form_valid(self, form):
+        messages.success(self.request, "Talla actualizada.")
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["editing"] = True
+        return context
+
+
+@method_decorator([login_required, staff_member_required(login_url=settings.LOGIN_URL)], name="dispatch")
+class SizeDeleteView(DeleteView):
+    model = Size
+    template_name = "dashboard/size_confirm_delete.html"
+    context_object_name = "size"
+    success_url = reverse_lazy("dashboard:size_list")
+    pk_url_kwarg = "pk"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        size = self.get_object()
+        context["product_count"] = size.product_set.count()
+        context["has_products"] = context["product_count"] > 0
+        return context
+
+    def form_valid(self, form):
+        messages.success(self.request, "Talla eliminada.")
+        return super().form_valid(form)
+
+
+@require_POST
+@login_required
+@staff_member_required(login_url=settings.LOGIN_URL)
+def size_api_create(request):
+    import json
+    try:
+        data = json.loads(request.body)
+    except Exception:
+        data = request.POST
+
+    name = data.get("name", "").strip()
+
+    if not name:
+        return JsonResponse({"success": False, "error": "El nombre de la talla es obligatorio."}, status=400)
+
+    size, created = Size.objects.get_or_create(name=name)
+
+    return JsonResponse({
+        "success": True,
+        "size": {
+            "id": size.id,
+            "name": size.name,
+        }
+    })
+
 

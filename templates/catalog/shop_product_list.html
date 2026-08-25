@@ -12,7 +12,7 @@
           <div class="container">
             <div class="row">
               <div class="col-sm-6 col-sm-offset-3">
-                <h2 class="module-title font-alt">Productos de Tienda</h2>
+                <h2 class="module-title font-alt">Colección Completa</h2>
                 <div class="module-subtitle font-serif">{{ configuracion.texto_productos_subtitulo|default:"Explora nuestra colección completa y encuentra las prendas que se adaptan a tu personalidad." }}</div>
               </div>
             </div>
@@ -60,7 +60,7 @@
                 <div class="shop-item">
                   <div class="shop-item-image">
                     <img src="{% if product.main_image %}{{ product.main_image.image.url }}{% else %}{% static 'images/producto-card.jpg' %}{% endif %}" alt="{{ product.name }}"/>
-                    <div class="shop-item-detail"><a class="btn btn-round btn-b" href="#" onclick="event.preventDefault(); comprarWhatsApp('{{ product.name|escapejs }}', '{% url 'catalog:product_detail' slug=product.slug %}');">
+                    <div class="shop-item-detail"><a class="btn btn-round btn-b" href="{% url 'catalog:product_detail' slug=product.slug %}">
                         <span class="icon-basket">Comprar</span></a></div>
                   </div>
                   <h4 class="shop-item-title font-alt"><a href="{% url 'catalog:product_detail' slug=product.slug %}">{{ product.name }}</a></h4>${{ product.price|floatformat:0|intcomma }}

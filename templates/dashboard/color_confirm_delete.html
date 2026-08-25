@@ -1,0 +1,38 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+{% block title %}Eliminar Color - Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-lg mx-auto mt-10">
+  <div class="danger-zone text-center">
+    <div class="danger-icon-container">
+      <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+      </svg>
+    </div>
+    <h2 class="font-heading text-xl font-bold mb-2">¿Eliminar color?</h2>
+    <div class="inline-flex items-center gap-2 mb-3 px-3 py-1 rounded-full bg-zinc-800 border theme-border">
+      <span class="w-4 h-4 rounded-full border border-white/20" style="background-color: {{ color.hex_code }};"></span>
+      <span class="font-medium text-white">{{ color.name }} ({{ color.hex_code }})</span>
+    </div>
+    <p class="theme-text-secondary mb-1">Estás a punto de eliminar este color.</p>
+    {% if has_products %}
+    <div class="mt-4 p-3 bg-amber-500/10 border border-amber-500/30 rounded-lg text-amber-400 text-sm">
+      Advertencia: Este color está asignado a {{ product_count }} producto(s). Al eliminarlo se desvinculará de ellos.
+    </div>
+    {% else %}
+    <p class="theme-text-secondary text-sm">Esta acción no se puede deshacer.</p>
+    {% endif %}
+
+    <div class="flex items-center justify-center gap-3 mt-6">
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="px-6 py-2 bg-red-500/20 text-red-400 rounded-lg text-sm font-medium hover:bg-red-500/30 transition-colors">
+          Eliminar
+        </button>
+      </form>
+      <a href="{% url 'dashboard:color_list' %}" class="px-4 py-2 theme-text-secondary hover:text-white transition-colors text-sm">Cancelar</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,78 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+{% block title %}{% if editing %}Editar{% else %}Nuevo{% endif %} Color - Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="flex items-center justify-center gap-3 mb-6 relative">
+    <a href="{% url 'dashboard:color_list' %}" class="absolute left-0 p-2 theme-text-secondary hover:text-white hover:bg-zinc-800 rounded-lg transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+    </a>
+    <h1 class="font-heading text-2xl font-bold text-center">{% if editing %}Editar{% else %}Nuevo{% endif %} Color</h1>
+  </div>
+
+  <form method="post" class="space-y-5">
+    {% csrf_token %}
+
+    {% for error in form.non_field_errors %}
+    <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">{{ error }}</div>
+    {% endfor %}
+
+    <div>
+      <label class="dash-label">{{ form.name.label }}</label>
+      {{ form.name }}
+      {% if form.name.errors %}
+      <p class="mt-1 text-xs text-red-400">{{ form.name.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="dash-label">{{ form.hex_code.label }}</label>
+      <div class="flex items-center gap-3">
+        <input type="color" id="nativeColorPicker" value="{% if form.instance.hex_code %}{{ form.instance.hex_code }}{% else %}#000000{% endif %}" class="w-10 h-10 rounded-lg border border-zinc-700 bg-zinc-800 cursor-pointer p-1">
+        <div class="flex-1">
+          {{ form.hex_code }}
+        </div>
+        <div id="colorPreviewSwatch" class="w-10 h-10 rounded-lg border border-zinc-700 shadow-inner" style="background-color: {% if form.instance.hex_code %}{{ form.instance.hex_code }}{% else %}#000000{% endif %};"></div>
+      </div>
+      <p class="mt-1 text-xs theme-text-secondary">Usa el selector o escribe el código hexadecimal con formato #RRGGBB.</p>
+      {% if form.hex_code.errors %}
+      <p class="mt-1 text-xs text-red-400">{{ form.hex_code.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div class="flex items-center gap-3 pt-2">
+      <button type="submit" class="px-6 py-2 theme-accent-bg rounded-lg text-sm font-medium hover:opacity-80 transition-opacity">
+        {% if editing %}Guardar cambios{% else %}Crear color{% endif %}
+      </button>
+      <a href="{% url 'dashboard:color_list' %}" class="px-4 py-2 theme-text-secondary hover:text-white transition-colors text-sm">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  const picker = document.getElementById('nativeColorPicker');
+  const hexInput = document.querySelector('[name="hex_code"]');
+  const preview = document.getElementById('colorPreviewSwatch');
+
+  if (picker && hexInput && preview) {
+    picker.addEventListener('input', function() {
+      hexInput.value = this.value.toUpperCase();
+      preview.style.backgroundColor = this.value;
+    });
+
+    hexInput.addEventListener('input', function() {
+      let val = this.value.trim();
+      if (!val.startsWith('#')) val = '#' + val;
+      if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
+        picker.value = val;
+        preview.style.backgroundColor = val;
+      }
+    });
+  }
+</script>
+{% endblock %}

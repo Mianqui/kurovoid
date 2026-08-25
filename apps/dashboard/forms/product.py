@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.text import slugify
 
-from catalog.models import Category, Color, Product, ProductImage, Size
+from catalog.models import Category, Color, Product, Size
 
 INPUT_CLASSES = "w-full bg-zinc-800 border border-zinc-700 theme-text-primary rounded-lg px-4 py-2.5 text-sm placeholder-zinc-500 focus:outline-none focus:border-accent transition-colors"
 SELECT_CLASSES = "w-full bg-zinc-800 border border-zinc-700 theme-text-primary rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-accent transition-colors"
@@ -20,7 +20,6 @@ class ProductForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
-    image = forms.ImageField(required=False, label="Imagen principal")
 
     class Meta:
         model = Product
@@ -44,10 +43,4 @@ class ProductForm(forms.ModelForm):
         if commit:
             product.save()
             self.save_m2m()
-            image = self.cleaned_data.get("image")
-            if image:
-                ProductImage.objects.update_or_create(
-                    product=product, is_main=True,
-                    defaults={"image": image, "alt_text": product.name},
-                )
         return product

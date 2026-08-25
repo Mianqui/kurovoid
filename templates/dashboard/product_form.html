@@ -57,28 +57,40 @@
     </div>
 
     <div>
-      <label class="dash-label">Imagen principal</label>
-      {{ form.image }}
-      {% if editing and main_image %}
-      <div class="mt-3">
-        <p class="text-xs text-zinc-500 mb-2">Imagen actual:</p>
-        <img src="{{ main_image.image.url }}" alt="Preview" class="w-32 h-32 rounded-lg object-cover border border-zinc-800">
+      <div class="flex items-center justify-between mb-2">
+        <label class="dash-label mb-0">Imágenes del Producto</label>
+        <span class="text-xs theme-text-secondary">Selecciona una o varias imágenes (JPG, PNG, WebP)</span>
       </div>
-      {% endif %}
-      <div id="imagePreview" class="mt-3 hidden">
-        <p class="text-xs text-zinc-500 mb-2">Nueva imagen:</p>
-        <img id="previewImg" src="#" alt="Preview" class="w-32 h-32 rounded-lg object-cover border border-zinc-800">
+
+      <div id="product-images-dropzone" class="dash-dropzone cursor-pointer p-6 border-2 border-dashed border-zinc-700 hover:border-accent rounded-xl text-center transition-colors bg-zinc-800/50">
+        <svg class="w-10 h-10 mx-auto mb-2 theme-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <p class="theme-text-primary text-sm font-medium mb-1">Arrastra múltiples imágenes aquí o haz clic para seleccionarlas</p>
+        <p class="text-zinc-500 text-xs">La primera imagen seleccionada será la imagen principal del producto</p>
+        <input type="file" name="images" id="productImagesInput" accept="image/*" multiple class="hidden">
       </div>
-      {% for error in form.image.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
+
+      <!-- Previsualización de imágenes seleccionadas para subir -->
+      <div id="selectedImagesPreviewContainer" class="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 hidden"></div>
     </div>
 
     <div>
-      <label class="dash-label">Tallas</label>
-      <div class="flex flex-wrap gap-2">
-        {% for checkbox in form.sizes %}
-        <label class="size-label-dash {% if checkbox.data.selected %}is-selected{% endif %}">
-          {{ checkbox.tag }}
-          {{ checkbox.choice_label }}
+      <div class="flex items-center justify-between mb-2">
+        <label class="dash-label mb-0">Tallas</label>
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="openQuickSizeModal()" class="text-xs theme-accent-text hover:underline inline-flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Nueva talla
+          </button>
+          <a href="{% url 'dashboard:size_list' %}" target="_blank" class="text-xs theme-text-secondary hover:text-white">Gestionar</a>
+        </div>
+      </div>
+      <div id="sizes-container" class="flex flex-wrap gap-2">
+        {% for size in available_sizes %}
+        <label class="size-label-dash {% if size.id in selected_size_ids %}is-selected{% endif %}">
+          <input type="checkbox" name="sizes" value="{{ size.id }}" {% if size.id in selected_size_ids %}checked{% endif %} class="hidden" onchange="this.parentElement.classList.toggle('is-selected', this.checked)">
+          <span>{{ size.name }}</span>
         </label>
         {% empty %}
         <p class="text-xs text-zinc-500">No hay tallas creadas aún</p>
@@ -88,12 +100,22 @@
     </div>
 
     <div>
-      <label class="dash-label">Colores</label>
-      <div class="flex flex-wrap gap-3">
-        {% for checkbox in form.colors %}
-        <label class="color-label-dash {% if checkbox.data.selected %}is-selected{% endif %}" title="{{ checkbox.choice_label }}">
-          {{ checkbox.tag }}
-          <span class="color-label-name">{{ checkbox.choice_label }}</span>
+      <div class="flex items-center justify-between mb-2">
+        <label class="dash-label mb-0">Colores</label>
+        <div class="flex items-center gap-3">
+          <button type="button" onclick="openQuickColorModal()" class="text-xs theme-accent-text hover:underline inline-flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+            Nuevo color
+          </button>
+          <a href="{% url 'dashboard:color_list' %}" target="_blank" class="text-xs theme-text-secondary hover:text-white">Gestionar</a>
+        </div>
+      </div>
+      <div id="colors-container" class="flex flex-wrap gap-3">
+        {% for color in available_colors %}
+        <label class="color-label-dash {% if color.id in selected_color_ids %}is-selected{% endif %}" title="{{ color.name }} ({{ color.hex_code }})">
+          <input type="checkbox" name="colors" value="{{ color.id }}" {% if color.id in selected_color_ids %}checked{% endif %} class="hidden" onchange="this.parentElement.classList.toggle('is-selected', this.checked)">
+          <span class="w-3.5 h-3.5 rounded-full inline-block border border-white/20 shadow-sm shrink-0" style="background-color: {{ color.hex_code }};"></span>
+          <span class="color-label-name">{{ color.name }}</span>
         </label>
         {% empty %}
         <p class="text-xs text-zinc-500">No hay colores creados aún</p>
@@ -115,6 +137,55 @@
       <a href="{% url 'dashboard:product_list' %}" class="theme-text-secondary hover:text-white text-sm transition-colors">Cancelar</a>
     </div>
   </form>
+</div>
+
+<!-- Modal Rápido: Nuevo Color -->
+<div id="quickColorModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+  <div class="theme-bg-secondary border theme-border rounded-xl max-w-sm w-full p-6 shadow-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-heading font-bold text-lg theme-text-primary">Añadir Nuevo Color</h3>
+      <button type="button" onclick="closeQuickColorModal()" class="theme-text-secondary hover:text-white text-xl leading-none">&times;</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="dash-label">Nombre del Color</label>
+        <input type="text" id="quickColorName" placeholder="Ej: Verde Oliva, Azul Marino..." class="w-full bg-zinc-800 border border-zinc-700 theme-text-primary rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent">
+      </div>
+      <div>
+        <label class="dash-label">Muestra y Código Hexadecimal</label>
+        <div class="flex items-center gap-3">
+          <input type="color" id="quickColorPicker" value="#1E88E5" class="w-10 h-10 rounded-lg border border-zinc-700 bg-zinc-800 cursor-pointer p-1">
+          <input type="text" id="quickColorHex" value="#1E88E5" placeholder="#1E88E5" class="flex-1 bg-zinc-800 border border-zinc-700 theme-text-primary rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-accent">
+        </div>
+      </div>
+      <div id="quickColorError" class="text-xs text-red-400 hidden"></div>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" onclick="closeQuickColorModal()" class="px-3 py-1.5 text-xs theme-text-secondary hover:text-white">Cancelar</button>
+        <button type="button" id="quickColorSubmitBtn" onclick="submitQuickColor()" class="px-4 py-1.5 theme-accent-bg rounded-lg text-xs font-semibold hover:opacity-80">Crear y Seleccionar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Rápido: Nueva Talla -->
+<div id="quickSizeModal" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden items-center justify-center p-4">
+  <div class="theme-bg-secondary border theme-border rounded-xl max-w-sm w-full p-6 shadow-2xl">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="font-heading font-bold text-lg theme-text-primary">Añadir Nueva Talla</h3>
+      <button type="button" onclick="closeQuickSizeModal()" class="theme-text-secondary hover:text-white text-xl leading-none">&times;</button>
+    </div>
+    <div class="space-y-4">
+      <div>
+        <label class="dash-label">Nombre de la Talla</label>
+        <input type="text" id="quickSizeName" placeholder="Ej: XXL, 3XL, 34, Única..." class="w-full bg-zinc-800 border border-zinc-700 theme-text-primary rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-accent">
+      </div>
+      <div id="quickSizeError" class="text-xs text-red-400 hidden"></div>
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <button type="button" onclick="closeQuickSizeModal()" class="px-3 py-1.5 text-xs theme-text-secondary hover:text-white">Cancelar</button>
+        <button type="button" id="quickSizeSubmitBtn" onclick="submitQuickSize()" class="px-4 py-1.5 theme-accent-bg rounded-lg text-xs font-semibold hover:opacity-80">Crear y Seleccionar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 {% if editing and product %}
@@ -212,17 +283,114 @@
 
 {% block extra_js %}
 <script>
-  document.querySelector('input[type="file"]')?.addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        document.getElementById('previewImg').src = ev.target.result;
-        document.getElementById('imagePreview').classList.remove('hidden');
-      };
-      reader.readAsDataURL(file);
+  (function() {
+    const pDropzone = document.getElementById('product-images-dropzone');
+    const pInput = document.getElementById('productImagesInput');
+    const previewContainer = document.getElementById('selectedImagesPreviewContainer');
+    let selectedFiles = [];
+
+    if (pDropzone && pInput && previewContainer) {
+      pDropzone.addEventListener('click', () => pInput.click());
+
+      pDropzone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        pDropzone.classList.add('border-accent', 'bg-zinc-800');
+      });
+
+      pDropzone.addEventListener('dragleave', () => {
+        pDropzone.classList.remove('border-accent', 'bg-zinc-800');
+      });
+
+      pDropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        pDropzone.classList.remove('border-accent', 'bg-zinc-800');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+          addFiles(e.dataTransfer.files);
+        }
+      });
+
+      pInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files.length > 0) {
+          addFiles(e.target.files);
+        }
+      });
     }
-  });
+
+    function addFiles(fileList) {
+      for (let i = 0; i < fileList.length; i++) {
+        // Avoid duplicate files by name and size
+        const f = fileList[i];
+        if (!selectedFiles.some(existing => existing.name === f.name && existing.size === f.size)) {
+          selectedFiles.push(f);
+        }
+      }
+      syncInputFiles();
+      renderPreviews();
+    }
+
+    window.removeSelectedFile = function(index) {
+      selectedFiles.splice(index, 1);
+      syncInputFiles();
+      renderPreviews();
+    };
+
+    function syncInputFiles() {
+      try {
+        const dt = new DataTransfer();
+        selectedFiles.forEach(file => dt.items.add(file));
+        pInput.files = dt.files;
+      } catch (err) {
+        // Fallback for older browsers
+      }
+    }
+
+    function renderPreviews() {
+      if (selectedFiles.length === 0) {
+        previewContainer.innerHTML = '';
+        previewContainer.classList.add('hidden');
+        return;
+      }
+      previewContainer.innerHTML = '';
+      previewContainer.classList.remove('hidden');
+
+      selectedFiles.forEach((file, index) => {
+        const card = document.createElement('div');
+        card.className = 'relative group aspect-square rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800 shadow-sm';
+
+        const img = document.createElement('img');
+        img.className = 'w-full h-full object-cover';
+        const reader = new FileReader();
+        reader.onload = (e) => { img.src = e.target.result; };
+        reader.readAsDataURL(file);
+
+        const overlay = document.createElement('div');
+        overlay.className = 'absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2';
+
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'p-1.5 bg-red-600/90 hover:bg-red-600 text-white rounded-full transition-colors';
+        removeBtn.title = 'Quitar imagen';
+        removeBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
+        removeBtn.onclick = (e) => {
+          e.stopPropagation();
+          window.removeSelectedFile(index);
+        };
+        overlay.appendChild(removeBtn);
+
+        card.appendChild(img);
+        card.appendChild(overlay);
+
+        if (index === 0) {
+          const badge = document.createElement('span');
+          badge.className = 'absolute top-1.5 left-1.5 px-2 py-0.5 bg-blue-500/90 text-white text-[10px] font-semibold rounded-full shadow-sm';
+          badge.textContent = 'Principal';
+          card.appendChild(badge);
+        }
+
+        previewContainer.appendChild(card);
+      });
+    }
+  })();
 </script>
 
 {% if editing and product %}
@@ -426,4 +594,150 @@
   initSortable();
 </script>
 {% endif %}
+
+<script>
+  function openQuickColorModal() {
+    const modal = document.getElementById('quickColorModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.getElementById('quickColorName').focus();
+  }
+
+  function closeQuickColorModal() {
+    const modal = document.getElementById('quickColorModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.getElementById('quickColorError').classList.add('hidden');
+    document.getElementById('quickColorName').value = '';
+  }
+
+  const qPicker = document.getElementById('quickColorPicker');
+  const qHex = document.getElementById('quickColorHex');
+  if (qPicker && qHex) {
+    qPicker.addEventListener('input', function() { qHex.value = this.value.toUpperCase(); });
+    qHex.addEventListener('input', function() {
+      let val = this.value.trim();
+      if (!val.startsWith('#')) val = '#' + val;
+      if (/^#[0-9A-Fa-f]{6}$/.test(val)) { qPicker.value = val; }
+    });
+  }
+
+  function submitQuickColor() {
+    const name = document.getElementById('quickColorName').value.trim();
+    const hex = document.getElementById('quickColorHex').value.trim();
+    const errEl = document.getElementById('quickColorError');
+    if (!name) {
+      errEl.textContent = 'Ingresa un nombre para el color.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    const btn = document.getElementById('quickColorSubmitBtn');
+    btn.disabled = true;
+
+    fetch('{% url "dashboard:color_api_create" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name="csrfmiddlewaretoken"]').value
+      },
+      body: JSON.stringify({ name: name, hex_code: hex })
+    })
+    .then(r => r.json())
+    .then(data => {
+      btn.disabled = false;
+      if (data.success) {
+        const container = document.getElementById('colors-container');
+        let existing = container.querySelector(`input[value="${data.color.id}"]`);
+        if (existing) {
+          existing.checked = true;
+          existing.parentElement.classList.add('is-selected');
+        } else {
+          const label = document.createElement('label');
+          label.className = 'color-label-dash is-selected';
+          label.title = `${data.color.name} (${data.color.hex_code})`;
+          label.innerHTML = `
+            <input type="checkbox" name="colors" value="${data.color.id}" checked class="hidden" onchange="this.parentElement.classList.toggle('is-selected', this.checked)">
+            <span class="w-3.5 h-3.5 rounded-full inline-block border border-white/20 shadow-sm shrink-0" style="background-color: ${data.color.hex_code};"></span>
+            <span class="color-label-name">${data.color.name}</span>
+          `;
+          container.appendChild(label);
+        }
+        closeQuickColorModal();
+      } else {
+        errEl.textContent = data.error || 'Error al crear color.';
+        errEl.classList.remove('hidden');
+      }
+    })
+    .catch(e => {
+      btn.disabled = false;
+      errEl.textContent = 'Error de conexión.';
+      errEl.classList.remove('hidden');
+    });
+  }
+
+  function openQuickSizeModal() {
+    const modal = document.getElementById('quickSizeModal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    document.getElementById('quickSizeName').focus();
+  }
+
+  function closeQuickSizeModal() {
+    const modal = document.getElementById('quickSizeModal');
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    document.getElementById('quickSizeError').classList.add('hidden');
+    document.getElementById('quickSizeName').value = '';
+  }
+
+  function submitQuickSize() {
+    const name = document.getElementById('quickSizeName').value.trim();
+    const errEl = document.getElementById('quickSizeError');
+    if (!name) {
+      errEl.textContent = 'Ingresa un nombre para la talla.';
+      errEl.classList.remove('hidden');
+      return;
+    }
+    const btn = document.getElementById('quickSizeSubmitBtn');
+    btn.disabled = true;
+
+    fetch('{% url "dashboard:size_api_create" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': document.querySelector('[name="csrfmiddlewaretoken"]').value
+      },
+      body: JSON.stringify({ name: name })
+    })
+    .then(r => r.json())
+    .then(data => {
+      btn.disabled = false;
+      if (data.success) {
+        const container = document.getElementById('sizes-container');
+        let existing = container.querySelector(`input[value="${data.size.id}"]`);
+        if (existing) {
+          existing.checked = true;
+          existing.parentElement.classList.add('is-selected');
+        } else {
+          const label = document.createElement('label');
+          label.className = 'size-label-dash is-selected';
+          label.innerHTML = `
+            <input type="checkbox" name="sizes" value="${data.size.id}" checked class="hidden" onchange="this.parentElement.classList.toggle('is-selected', this.checked)">
+            <span>${data.size.name}</span>
+          `;
+          container.appendChild(label);
+        }
+        closeQuickSizeModal();
+      } else {
+        errEl.textContent = data.error || 'Error al crear talla.';
+        errEl.classList.remove('hidden');
+      }
+    })
+    .catch(e => {
+      btn.disabled = false;
+      errEl.textContent = 'Error de conexión.';
+      errEl.classList.remove('hidden');
+    });
+  }
+</script>
 {% endblock %}

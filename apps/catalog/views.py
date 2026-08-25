@@ -94,7 +94,7 @@ class ProductDetailView(DetailView):
 # Productos filtrados por categoría (slug en URL)
 class CategoryView(ListView):
     model = Product
-    template_name = "catalog/category_list.html"
+    template_name = "catalog/shop_product_list.html"
     context_object_name = "products"
     paginate_by = 12
 
@@ -115,7 +115,14 @@ class CategoryView(ListView):
         context["price_range"] = Product.objects.filter(is_active=True).aggregate(
             min_price=Min("price"), max_price=Max("price")
         )
-        context["selected"] = {}
+        context["selected"] = {"category": self.kwargs["slug"]}
+        try:
+            config = ConfiguracionTienda.load()
+        except Exception:
+            class DummyConfig:
+                imagen_fondo_productos = None
+            config = DummyConfig()
+        context["configuracion"] = config
         return context
 
 

@@ -54,11 +54,20 @@ function comprarWhatsApp(productName, productPath = '', phone = '573144871445') 
     const qty = qtyInput ? qtyInput.value : 1;
     const sizeSelect = document.getElementById('product-size');
     const colorSelect = document.getElementById('product-color');
-    const size = sizeSelect ? sizeSelect.value : 'No especificada';
-    const color = colorSelect ? colorSelect.value : 'No especificado';
+    const size = sizeSelect ? sizeSelect.value : '';
+    const color = colorSelect ? colorSelect.value : '';
     const name = productName || document.querySelector('.product-title')?.textContent?.trim() || 'Producto';
     const productUrl = productPath ? (window.location.origin + productPath) : window.location.href;
-    const message = `Hola KUROVOID, me interesa comprar este producto:\n\n*${name}*\n- Cantidad: ${qty}\n- Talla: ${size}\n- Color: ${color}\n\nEnlace: ${productUrl}`;
+    
+    let message = `Hola KUROVOID, me interesa comprar este producto:\n\n*${name}*\n- Cantidad: ${qty}`;
+    if (size && size !== 'No especificada') {
+        message += `\n- Talla: ${size}`;
+    }
+    if (color && color !== 'No especificado') {
+        message += `\n- Color: ${color}`;
+    }
+    message += `\n\nEnlace: ${productUrl}`;
+
     const waUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
     window.open(waUrl, '_blank');
 }

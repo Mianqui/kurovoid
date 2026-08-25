@@ -1,0 +1,76 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+{% block title %}Colores - Dashboard{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h1 class="font-heading text-2xl font-bold theme-text-primary">Colores de Productos</h1>
+    <p class="text-sm theme-text-secondary mt-1">Gestiona los colores disponibles para los productos de la tienda.</p>
+  </div>
+  <a href="{% url 'dashboard:color_create' %}" class="px-4 py-2 theme-accent-bg rounded-lg text-sm font-medium hover:opacity-80 transition-opacity inline-flex items-center gap-2">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    Nuevo color
+  </a>
+</div>
+
+<div class="theme-bg-secondary border theme-border rounded-xl overflow-hidden">
+  {% if colores %}
+  <table class="dash-table">
+    <thead>
+      <tr>
+        <th style="width: 70px;">Muestra</th>
+        <th>Nombre</th>
+        <th>Código Hex</th>
+        <th class="text-center">Productos</th>
+        <th class="text-right">Acciones</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-[var(--border)]">
+      {% for color in colores %}
+      <tr>
+        <td>
+          <div class="w-8 h-8 rounded-full border-2 border-zinc-700 shadow-sm flex items-center justify-center" style="background-color: {{ color.hex_code }};">
+          </div>
+        </td>
+        <td>
+          <span class="theme-text-primary font-medium">{{ color.name }}</span>
+        </td>
+        <td>
+          <span class="theme-text-secondary font-mono text-sm px-2 py-0.5 rounded bg-zinc-800 border theme-border">{{ color.hex_code }}</span>
+        </td>
+        <td class="text-center">
+          <span class="theme-text-secondary text-sm">{{ color.product_count|default:"0" }}</span>
+        </td>
+        <td class="text-right">
+          <div class="flex items-center justify-end gap-2">
+            <a href="{% url 'dashboard:color_update' color.id %}" class="p-2 theme-text-secondary hover:text-white hover:bg-zinc-700 rounded-lg transition-colors" title="Editar">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+              </svg>
+            </a>
+            <a href="{% url 'dashboard:color_delete' color.id %}" class="p-2 theme-text-secondary hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              </svg>
+            </a>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="text-center py-12 theme-text-secondary">
+    <svg class="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 21a4 4 0 01-4-4 5 5 0 014-4h4a4 4 0 014 4v4H7zm0 0a4 4 0 004-4 5 5 0 00-4-4H3v4a4 4 0 004 4zm8-10a4 4 0 100-8 4 4 0 000 8zm-8 4a3 3 0 100-6 3 3 0 000 6z"/>
+    </svg>
+    <p class="text-lg font-medium mb-1">No hay colores creados</p>
+    <p class="text-sm">Agrega colores para asignarlos a tus productos.</p>
+    <a href="{% url 'dashboard:color_create' %}" class="inline-block mt-4 px-4 py-2 theme-accent-bg rounded-lg text-sm font-medium hover:opacity-80 transition-opacity">Crear color</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

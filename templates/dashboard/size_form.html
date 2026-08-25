@@ -1,0 +1,39 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+{% block title %}{% if editing %}Editar{% else %}Nueva{% endif %} Talla - Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="flex items-center justify-center gap-3 mb-6 relative">
+    <a href="{% url 'dashboard:size_list' %}" class="absolute left-0 p-2 theme-text-secondary hover:text-white hover:bg-zinc-800 rounded-lg transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+    </a>
+    <h1 class="font-heading text-2xl font-bold text-center">{% if editing %}Editar{% else %}Nueva{% endif %} Talla</h1>
+  </div>
+
+  <form method="post" class="space-y-5">
+    {% csrf_token %}
+
+    {% for error in form.non_field_errors %}
+    <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">{{ error }}</div>
+    {% endfor %}
+
+    <div>
+      <label class="dash-label">{{ form.name.label }}</label>
+      {{ form.name }}
+      {% if form.name.errors %}
+      <p class="mt-1 text-xs text-red-400">{{ form.name.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div class="flex items-center gap-3 pt-2">
+      <button type="submit" class="px-6 py-2 theme-accent-bg rounded-lg text-sm font-medium hover:opacity-80 transition-opacity">
+        {% if editing %}Guardar cambios{% else %}Crear talla{% endif %}
+      </button>
+      <a href="{% url 'dashboard:size_list' %}" class="px-4 py-2 theme-text-secondary hover:text-white transition-colors text-sm">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
