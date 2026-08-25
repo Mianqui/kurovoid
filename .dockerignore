@@ -8,6 +8,5 @@ media
 db.sqlite3
 __pycache__
 *.pyc
-static/css/output.css
 docker-compose.yml
 *.md
