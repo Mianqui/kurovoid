@@ -58,11 +58,12 @@
               {% for product in products %}
               <div class="col-sm-6 col-md-3 col-lg-3">
                 <div class="shop-item">
-                  <div class="shop-item-image">
-                    <img src="{% if product.main_image %}{{ product.main_image.image.url }}{% else %}{% static 'images/producto-card.jpg' %}{% endif %}" alt="{{ product.name }}"/>
-                    <div class="shop-item-detail"><a class="btn btn-round btn-b" href="{% url 'catalog:product_detail' slug=product.slug %}">
-                        <span class="icon-basket">Comprar</span></a></div>
-                  </div>
+                  <a href="{% url 'catalog:product_detail' slug=product.slug %}" class="shop-item-image">
+                    <img class="shop-img-primary" src="{% if product.main_image %}{{ product.main_image.image.url }}{% else %}{% static 'images/producto-card.jpg' %}{% endif %}" alt="{{ product.name }}"/>
+                    {% if product.second_image %}
+                    <img class="shop-img-hover" src="{{ product.second_image.image.url }}" alt="{{ product.name }} - vista 2"/>
+                    {% endif %}
+                  </a>
                   <h4 class="shop-item-title font-alt"><a href="{% url 'catalog:product_detail' slug=product.slug %}">{{ product.name }}</a></h4>${{ product.price|floatformat:0|intcomma }}
                 </div>
               </div>
