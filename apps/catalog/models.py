@@ -95,6 +95,15 @@ class Product(models.Model):
             return main
         return self.images.first()
 
+    def second_image(self):
+        """Devuelve la segunda imagen (no principal) para el efecto hover."""
+        main = self.main_image()
+        if main:
+            img = self.images.exclude(pk=main.pk).first()
+            if img:
+                return img
+        return None
+
     def __str__(self):
         return self.name
 

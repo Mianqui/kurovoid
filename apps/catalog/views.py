@@ -14,7 +14,7 @@ class ProductListView(ListView):
     paginate_by = 12
 
     def get_queryset(self):
-        qs = Product.objects.filter(is_active=True).select_related("category")
+        qs = Product.objects.filter(is_active=True).select_related("category").prefetch_related("images")
         category_slug = self.request.GET.get("category")
         gender = self.request.GET.get("gender")
         ordering = self.request.GET.get("ordering")
@@ -114,7 +114,7 @@ class CategoryView(ListView):
     def get_queryset(self):
         qs = Product.objects.filter(
             category=self.get_category(), is_active=True
-        ).select_related("category")
+        ).select_related("category").prefetch_related("images")
         gender = self.request.GET.get("gender")
         ordering = self.request.GET.get("ordering")
         if gender in ["hombre", "mujer"]:
@@ -164,8 +164,8 @@ class HomeView(TemplateView):
         context["selected"] = {
             k: v for k, v in self.request.GET.items() if v
         }
-        context["new_products"] = Product.objects.filter(is_active=True).order_by("-created_at")[:8]
-        context["featured_products"] = Product.objects.filter(is_active=True, is_featured=True).order_by("-created_at")
+        context["new_products"] = Product.objects.filter(is_active=True).prefetch_related("images").order_by("-created_at")[:8]
+        context["featured_products"] = Product.objects.filter(is_active=True, is_featured=True).prefetch_related("images").order_by("-created_at")
         context["carousel_images"] = CarouselImage.objects.filter(is_active=True)
         try:
             context["configuracion"] = ConfiguracionTienda.load()

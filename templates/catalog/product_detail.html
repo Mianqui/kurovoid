@@ -8,20 +8,45 @@
           <div class="container">
             <div class="row">
               <div class="col-sm-6 mb-sm-40">
-                {% if product.main_image %}
-                <a class="gallery" href="{{ product.main_image.image.url }}">
-                  <img src="{{ product.main_image.image.url }}" alt="{{ product.name }}"/>
-                </a>
-                {% else %}
-                <a class="gallery" href="{% static 'images/producto-card.jpg' %}"><img src="{% static 'images/producto-card.jpg' %}" alt="Single Product Image"/></a>
-                {% endif %}
-                <ul class="product-gallery">
-                  {% for img in product.images.all %}
-                  {% if not img.is_main %}
-                  <li><a class="gallery" href="{{ img.image.url }}"></a><img src="{{ img.image.url }}" alt="Gallery Image"/></li>
-                  {% endif %}
-                  {% endfor %}
-</ul>
+                <div class="product-image-wrapper">
+                  <!-- Miniaturas verticales (izquierda) -->
+                  <ul class="product-gallery">
+                    {% if product.main_image %}
+                    <li class="active">
+                      <a class="gallery-thumb" data-full="{{ product.main_image.image.url }}">
+                        <img src="{{ product.main_image.image.url }}" alt="{{ product.name }}"/>
+                      </a>
+                    </li>
+                    {% else %}
+                    <li class="active">
+                      <a class="gallery-thumb" data-full="{% static 'images/producto-card.jpg' %}">
+                        <img src="{% static 'images/producto-card.jpg' %}" alt="Single Product Image"/>
+                      </a>
+                    </li>
+                    {% endif %}
+                    {% for img in product.images.all %}
+                    {% if not img.is_main %}
+                    <li>
+                      <a class="gallery-thumb" data-full="{{ img.image.url }}">
+                        <img src="{{ img.image.url }}" alt="Gallery Image"/>
+                      </a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                  </ul>
+                  <!-- Imagen principal (derecha) -->
+                  <div class="product-main-image">
+                    {% if product.main_image %}
+                    <a class="gallery" id="product-main-link" href="{{ product.main_image.image.url }}">
+                      <img id="product-main-img" src="{{ product.main_image.image.url }}" alt="{{ product.name }}"/>
+                    </a>
+                    {% else %}
+                    <a class="gallery" id="product-main-link" href="{% static 'images/producto-card.jpg' %}">
+                      <img id="product-main-img" src="{% static 'images/producto-card.jpg' %}" alt="Single Product Image"/>
+                    </a>
+                    {% endif %}
+                  </div>
+                </div>
               </div>
               <div class="col-sm-6">
                 <div class="row">
@@ -150,4 +175,34 @@
 
     <hr class="divider-d">
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  $(document).ready(function () {
+
+    // Inicializa el lightbox de Magnific Popup sobre la imagen principal
+    function initLightbox() {
+      $('#product-main-link').magnificPopup({
+        type: 'image',
+        image: { tError: 'La imagen no pudo cargarse.' },
+        zoom: { enabled: true, duration: 300, easing: 'ease-in-out' }
+      });
+    }
+    initLightbox();
+
+    // Click en miniatura: cambiar imagen principal
+    $('.gallery-thumb').on('click', function (e) {
+      e.preventDefault();
+      var fullSrc = $(this).data('full');
+      $('#product-main-img').attr('src', fullSrc);
+      $('#product-main-link').attr('href', fullSrc);
+      $('.product-gallery li').removeClass('active');
+      $(this).closest('li').addClass('active');
+      $('#product-main-link').magnificPopup('close');
+      initLightbox();
+    });
+
+  });
+</script>
 {% endblock %}
