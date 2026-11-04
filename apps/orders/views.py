@@ -1,4 +1,3 @@
-from decimal import Decimal
 from asgiref.sync import sync_to_async
 from catalog.models import Category, Color, Product, Size
 from dashboard.models import ConfiguracionTienda
@@ -18,11 +17,7 @@ def cart_detail(request):
     try:
         config = ConfiguracionTienda.load()
     except Exception:
-
-        class DummyConfig:
-            precio_envio = 0
-
-        config = DummyConfig()
+        config = None
     context = {
         "cart": cart,
         "categories": Category.objects.all(),
@@ -33,7 +28,7 @@ def cart_detail(request):
         ),
         "selected": {},
         "configuracion": config,
-        "cart_total_with_shipping": cart.get_total_price() + Decimal(str(config.precio_envio)),
+        "cart_total_with_shipping": cart.get_total_price(),
     }
     return render(request, "orders/cart_detail.html", context)
 
@@ -132,13 +127,9 @@ class CheckoutView(LoginRequiredMixin, View):
         try:
             config = ConfiguracionTienda.load()
         except Exception:
-
-            class DummyConfig:
-                precio_envio = 0
-
-            config = DummyConfig()
+            config = None
             
-        cart_total_with_shipping = cart.get_total_price() + Decimal(str(config.precio_envio))
+        cart_total_with_shipping = cart.get_total_price()
         return render(
             request, "orders/checkout.html", {"cart": cart, "configuracion": config, "cart_total_with_shipping": cart_total_with_shipping}
         )

@@ -2,8 +2,8 @@ from django.db.models import Min, Max
 from django.shortcuts import get_object_or_404
 from django.views.generic import DetailView, ListView, TemplateView
 
-from .models import Category, Color, Product, Size, CarouselImage
-from dashboard.models import ConfiguracionTienda
+from .models import Category, Color, Product, Size, CarouselImage, InstagramPost
+from dashboard.models import ConfiguracionTienda, InstagramConfig
 
 
 # Lista de productos con filtros y paginación
@@ -171,4 +171,11 @@ class HomeView(TemplateView):
             context["configuracion"] = ConfiguracionTienda.load()
         except Exception:
             context["configuracion"] = None
+        # Instagram
+        instagram_config = InstagramConfig.load()
+        instagram_posts = list(
+            InstagramPost.objects.filter(is_active=True).order_by("orden", "-created_at")[:12]
+        )
+        context["instagram_config"] = instagram_config
+        context["instagram_posts"] = instagram_posts
         return context

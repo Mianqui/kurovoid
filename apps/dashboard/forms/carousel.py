@@ -27,7 +27,6 @@ class PersonalizacionForm(forms.ModelForm):
             "texto_exclusivos_subtitulo",
             "imagen_fondo_productos",
             "texto_productos_subtitulo",
-            "precio_envio",
         ]
         widgets = {
             "slider_link": forms.URLInput(attrs={"class": INPUT_CLASSES, "placeholder": "https://..."}),
@@ -35,5 +34,4 @@ class PersonalizacionForm(forms.ModelForm):
             "texto_slider_inferior": forms.TextInput(attrs={"class": INPUT_CLASSES, "placeholder": "Tu destino de moda online"}),
             "texto_exclusivos_subtitulo": forms.TextInput(attrs={"class": INPUT_CLASSES, "placeholder": "Piezas seleccionadas con los mejores materiales y diseños que definen tu estilo."}),
             "texto_productos_subtitulo": forms.TextInput(attrs={"class": INPUT_CLASSES, "placeholder": "Explora nuestra colección completa y encuentra las prendas que se adaptan a tu personalidad."}),
-            "precio_envio": forms.NumberInput(attrs={"class": INPUT_CLASSES, "step": "0.01"}),
         }

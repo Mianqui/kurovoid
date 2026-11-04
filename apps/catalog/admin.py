@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Color, Product, ProductImage, Size
+from .models import Category, Color, InstagramPost, Product, ProductImage, Size
 
 
 # Permite subir imágenes desde el formulario del producto
@@ -33,3 +33,10 @@ class SizeAdmin(admin.ModelAdmin):
 @admin.register(Color)
 class ColorAdmin(admin.ModelAdmin):
     pass
+
+
+@admin.register(InstagramPost)
+class InstagramPostAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "orden", "is_active", "created_at")
+    list_editable = ("orden", "is_active")
+    list_filter = ("is_active",)

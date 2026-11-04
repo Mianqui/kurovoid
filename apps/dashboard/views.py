@@ -1,7 +1,7 @@
 from datetime import date, timedelta
 
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib import messages
@@ -14,14 +14,16 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_POST
 from django.views.generic import DetailView, ListView, TemplateView, CreateView, UpdateView, DeleteView
 
-from catalog.models import Category as CategoryModel, Product, ProductImage, CarouselImage, Color, Size
+from catalog.models import Category as CategoryModel, Product, ProductImage, CarouselImage, Color, Size, InstagramPost
 from orders.models import Pedido, PedidoItem
 
 from .forms.category import CategoryForm
 from .forms.product import ProductForm
-from .forms.carousel import CarouselImageForm
+from .forms.carousel import CarouselImageForm, PersonalizacionForm
 from .forms.color import ColorForm
 from .forms.size import SizeForm
+from .forms.instagram import InstagramConfigForm, InstagramPostForm
+from .models import ConfiguracionTienda, InstagramConfig
 
 from django.conf import settings
 decorators = [login_required, staff_member_required(login_url=settings.LOGIN_URL)]
@@ -683,9 +685,6 @@ def ExportPedidosCSV(request):
     return response
 
 
-from .models import ConfiguracionTienda
-from .forms.carousel import PersonalizacionForm
-
 @method_decorator(decorators, name="dispatch")
 class PersonalizacionView(UpdateView):
     model = ConfiguracionTienda
@@ -931,4 +930,92 @@ def size_api_create(request):
         }
     })
 
+
+# ==========================================
+# INSTAGRAM
+# ==========================================
+
+
+@method_decorator(decorators, name="dispatch")
+class InstagramAdminView(TemplateView):
+    template_name = "dashboard/instagram.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        config = InstagramConfig.load()
+        context["config"] = config
+        context["form"] = InstagramConfigForm(instance=config)
+        context["posts"] = InstagramPost.objects.all().order_by("orden", "-created_at")
+        return context
+
+    def post(self, request, *args, **kwargs):
+        config = InstagramConfig.load()
+        form = InstagramConfigForm(request.POST, instance=config)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Configuración del carrusel de Instagram guardada.")
+            return redirect("dashboard:instagram")
+        messages.error(request, "Error al guardar la configuración.")
+        context = self.get_context_data()
+        context["form"] = form
+        return self.render_to_response(context)
+
+
+@method_decorator(decorators, name="dispatch")
+class InstagramPostCreateView(CreateView):
+    model = InstagramPost
+    form_class = InstagramPostForm
+    template_name = "dashboard/instagram_post_form.html"
+    success_url = reverse_lazy("dashboard:instagram")
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["editing"] = False
+        return ctx
+
+    def form_valid(self, form):
+        messages.success(self.request, "Imagen de Instagram creada.")
+        return super().form_valid(form)
+
+
+@method_decorator(decorators, name="dispatch")
+class InstagramPostUpdateView(UpdateView):
+    model = InstagramPost
+    form_class = InstagramPostForm
+    template_name = "dashboard/instagram_post_form.html"
+    success_url = reverse_lazy("dashboard:instagram")
+    pk_url_kwarg = "pk"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["editing"] = True
+        return ctx
+
+    def form_valid(self, form):
+        messages.success(self.request, "Imagen de Instagram actualizada.")
+        return super().form_valid(form)
+
+
+@method_decorator(decorators, name="dispatch")
+class InstagramPostDeleteView(DeleteView):
+    model = InstagramPost
+    template_name = "dashboard/instagram_post_confirm_delete.html"
+    success_url = reverse_lazy("dashboard:instagram")
+    pk_url_kwarg = "pk"
+
+    def form_valid(self, form):
+        messages.success(self.request, "Imagen de Instagram eliminada.")
+        return super().form_valid(form)
+
+
+@require_POST
+@login_required
+@staff_member_required(login_url=settings.LOGIN_URL)
+def instagram_reordenar(request):
+    import json
+    data = json.loads(request.body)
+    ids = data.get("ids", [])
+    for idx, post_id in enumerate(ids):
+        InstagramPost.objects.filter(id=post_id).update(orden=idx)
+    return JsonResponse({"success": True})
 

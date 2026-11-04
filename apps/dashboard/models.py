@@ -1,7 +1,7 @@
 from django.db import models
 
+
 class ConfiguracionTienda(models.Model):
-    precio_envio = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, verbose_name="Precio de Envío")
     imagen_fondo_productos = models.ImageField(upload_to="config/", blank=True, null=True, verbose_name="Fondo Página Productos")
     
     # Link general para el botón "Saber Más" del slider
@@ -31,4 +31,25 @@ class ConfiguracionTienda(models.Model):
     @classmethod
     def load(cls):
         obj, created = cls.objects.get_or_create(pk=1)
+        return obj
+
+
+class InstagramConfig(models.Model):
+    activo = models.BooleanField(default=True)
+    titulo = models.CharField(max_length=150, blank=True, default="")
+    subtitulo = models.CharField(max_length=300, blank=True)
+    usuario = models.CharField(max_length=100, default="kurovoid.shop")
+    texto_boton = models.CharField(max_length=100, default="Seguir en Instagram", blank=True)
+
+    class Meta:
+        verbose_name = "Configuración del carrusel de Instagram"
+        verbose_name_plural = "Configuración del carrusel de Instagram"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
         return obj

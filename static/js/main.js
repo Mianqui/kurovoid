@@ -408,7 +408,7 @@ console.log('%c Proudly Crafted with ZiOn.', 'background: #222; color: #bada55')
             var childCount = $(this).children().length;
             var shouldLoop = childCount > items;
 
-            $(this).owlCarousel( {
+            var owlOptions = {
                 navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
                 nav: navigation,
                 dots: pagination,
@@ -421,7 +421,20 @@ console.log('%c Proudly Crafted with ZiOn.', 'background: #222; color: #bada55')
                 autoplayHoverPause: true,
                 smartSpeed: 500,
                 fluidSpeed: 500
-            });
+            };
+
+            // Soporte para breakpoints responsivos via data-responsive
+            var responsiveAttr = $(this).attr('data-responsive');
+            if (responsiveAttr) {
+                try {
+                    var responsive = JSON.parse(responsiveAttr);
+                    owlOptions.responsive = responsive;
+                } catch (e) {
+                    // Si falla el parseo, ignoramos y usamos items por defecto
+                }
+            }
+
+            $(this).owlCarousel(owlOptions);
 
         });
 

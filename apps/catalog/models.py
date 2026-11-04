@@ -138,3 +138,29 @@ class CarouselImage(models.Model):
 
     def __str__(self):
         return self.title or f"Carrusel Imagen {self.id}"
+
+
+class InstagramPost(models.Model):
+    image = models.ImageField(upload_to="instagram/")
+    link = models.URLField(
+        blank=True,
+        default="",
+        help_text="Enlace fijo al hacer clic en la imagen. Si se deja vacío, la imagen no será clicable.",
+    )
+    alt_text = models.CharField(
+        max_length=200,
+        blank=True,
+        default="",
+        help_text="Texto alternativo para accesibilidad.",
+    )
+    orden = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["orden", "-created_at"]
+        verbose_name = "Imagen de carrusel de Instagram"
+        verbose_name_plural = "Imágenes de carrusel de Instagram"
+
+    def __str__(self):
+        return self.alt_text or f"Imagen de Instagram {self.pk}"
