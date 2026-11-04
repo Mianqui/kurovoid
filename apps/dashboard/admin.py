@@ -3,4 +3,4 @@ from .models import ConfiguracionTienda
 
 @admin.register(ConfiguracionTienda)
 class ConfiguracionTiendaAdmin(admin.ModelAdmin):
-    list_display = ("__str__", "precio_envio")
+    list_display = ("__str__",)

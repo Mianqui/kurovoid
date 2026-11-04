@@ -149,3 +149,30 @@ if not DEBUG:
     SESSION_COOKIE_SECURE = config("SESSION_COOKIE_SECURE", default=False, cast=bool)
     CSRF_COOKIE_SECURE = config("CSRF_COOKIE_SECURE", default=False, cast=bool)
 
+
+# ---------------------------------------------------------------------------
+# Validación de variables de entorno requeridas
+# Lanza un error claro al arrancar si faltan credenciales críticas.
+# ---------------------------------------------------------------------------
+def _validar_entorno_requerido():
+    faltantes = []
+    if not SECRET_KEY or SECRET_KEY == "django-insecure-dev-key-change-me":
+        faltantes.append("SECRET_KEY")
+    if not config("DB_NAME", default=""):
+        faltantes.append("DB_NAME")
+    if not config("DB_USER", default=""):
+        faltantes.append("DB_USER")
+    if not config("DB_PASSWORD", default=""):
+        faltantes.append("DB_PASSWORD")
+    if faltantes:
+        raise ImproperlyConfigured(
+            "Faltan variables de entorno requeridas: "
+            + ", ".join(faltantes)
+            + ". Edita el archivo .env y vuelve a intentar."
+        )
+
+
+from django.core.exceptions import ImproperlyConfigured  # noqa: E402
+
+_validar_entorno_requerido()
+

@@ -1,0 +1,78 @@
+{% extends "dashboard/base_dashboard.html" %}
+{% load static %}
+
+{% block title %}{% if editing %}Editar{% else %}Nueva{% endif %} imagen de Instagram{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto">
+  <div class="flex items-center justify-center gap-3 mb-6 relative">
+    <a href="{% url 'dashboard:instagram' %}" class="absolute left-0 p-2 theme-text-secondary hover:text-white hover:bg-zinc-800 rounded-lg transition-colors">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+      </svg>
+    </a>
+    <h1 class="font-heading text-2xl font-bold text-center">{% if editing %}Editar{% else %}Nueva{% endif %} imagen de Instagram</h1>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" class="space-y-5">
+    {% csrf_token %}
+
+    {% for error in form.non_field_errors %}
+    <div class="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm">{{ error }}</div>
+    {% endfor %}
+
+    <div>
+      <label class="dash-label">Imagen</label>
+      {% if form.instance.image %}
+      <div class="mb-3">
+        <img src="{{ form.instance.image.url }}" alt="Vista previa" class="w-32 h-32 rounded-lg object-cover theme-bg-secondary">
+      </div>
+      {% endif %}
+      {{ form.image }}
+      <p class="mt-1 text-xs theme-text-secondary">{{ form.image.help_text }}</p>
+      {% if form.image.errors %}
+      <p class="mt-1 text-xs text-red-400">{{ form.image.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="dash-label">{{ form.link.label }}</label>
+      {{ form.link }}
+      <p class="mt-1 text-xs theme-text-secondary">{{ form.link.help_text }}</p>
+      {% if form.link.errors %}
+      <p class="mt-1 text-xs text-red-400">{{ form.link.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="dash-label">{{ form.alt_text.label }}</label>
+      {{ form.alt_text }}
+      <p class="mt-1 text-xs theme-text-secondary">{{ form.alt_text.help_text }}</p>
+      {% if form.alt_text.errors %}
+      <p class="mt-1 text-xs text-red-400">{{ form.alt_text.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <label class="dash-label">{{ form.orden.label }}</label>
+      {{ form.orden }}
+      <p class="mt-1 text-xs theme-text-secondary">{{ form.orden.help_text }}</p>
+      {% if form.orden.errors %}
+      <p class="mt-1 text-xs text-red-400">{{ form.orden.errors.0 }}</p>
+      {% endif %}
+    </div>
+
+    <div class="flex items-center gap-2">
+      {{ form.is_active }}
+      <label class="dash-label mb-0">{{ form.is_active.label }}</label>
+    </div>
+
+    <div class="flex items-center gap-3 pt-2">
+      <button type="submit" class="px-6 py-2 theme-accent-bg rounded-lg text-sm font-medium hover:opacity-80 transition-opacity">
+        {% if editing %}Guardar cambios{% else %}Subir imagen{% endif %}
+      </button>
+      <a href="{% url 'dashboard:instagram' %}" class="px-4 py-2 theme-text-secondary hover:text-white transition-colors text-sm">Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

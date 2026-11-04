@@ -9,9 +9,9 @@
             <li class="bg-dark-30 bg-dark shop-page-header" style="background-image:url('{{ slide.image.url }}');">
               <div class="titan-caption">
                 <div class="caption-content">
-                  <div class="font-alt mb-30 titan-title-size-1">{{ configuracion.texto_slider_superior|default:"Esto es Kurovoid" }}</div>
+                  <div class="font-alt mb-30 titan-title-size-1">{% if configuracion.texto_slider_superior %}{{ configuracion.texto_slider_superior }}{% endif %}</div>
                   <div class="font-alt mb-30 titan-title-size-4">{{ slide.title }}</div>
-                  <div class="font-alt mb-40 titan-title-size-4">{{ configuracion.texto_slider_inferior|default:"Tu destino de moda online" }}</div>
+                  <div class="font-alt mb-40 titan-title-size-4">{% if configuracion.texto_slider_inferior %}{{ configuracion.texto_slider_inferior }}{% endif %}</div>
                   {% if configuracion.slider_link %}
                   <a class="section-scroll btn btn-border-w btn-round" href="{{ configuracion.slider_link }}">Saber Más</a>
                   {% endif %}
@@ -22,9 +22,9 @@
             <li class="bg-dark-30 shop-page-header" style="background-color: #333;">
               <div class="titan-caption">
                 <div class="caption-content">
-                  <div class="font-alt mb-30 titan-title-size-1">{{ configuracion.texto_slider_superior|default:"Esto es Kurovoid" }}</div>
+                  <div class="font-alt mb-30 titan-title-size-1">{% if configuracion.texto_slider_superior %}{{ configuracion.texto_slider_superior }}{% endif %}</div>
                   <div class="font-alt mb-30 titan-title-size-4">Bienvenido</div>
-                  <div class="font-alt mb-40 titan-title-size-1">{{ configuracion.texto_slider_inferior|default:"Tu destino de moda online" }}</div>
+                  <div class="font-alt mb-40 titan-title-size-1">{% if configuracion.texto_slider_inferior %}{{ configuracion.texto_slider_inferior }}{% endif %}</div>
                 </div>
               </div>
             </li>
@@ -67,7 +67,9 @@
             <div class="row">
               <div class="col-sm-6 col-sm-offset-3">
                 <h2 class="module-title font-alt">Productos Destacados</h2>
-                <div class="module-subtitle font-serif">{{ configuracion.texto_exclusivos_subtitulo|default:"Piezas seleccionadas con los mejores materiales y diseños que definen tu estilo." }}</div>
+                {% if configuracion.texto_exclusivos_subtitulo %}
+                <div class="module-subtitle font-serif">{{ configuracion.texto_exclusivos_subtitulo }}</div>
+                {% endif %}
               </div>
             </div>
             <div class="row">
@@ -88,14 +90,64 @@
               <div class="text-center" style="display: flex; justify-content: center; align-items: flex-start; flex-wrap: wrap; gap: 30px;">
                 {% for fp in featured_products %}
                 <div style="max-width: 220px; flex: 0 0 200px;">
-                  <div class="ex-product" style="opacity: 1;">
-                    <a href="{% url 'catalog:product_detail' slug=fp.slug %}"><img src="{% if fp.main_image %}{{ fp.main_image.image.url }}{% else %}{% static 'images/producto-card.jpg' %}{% endif %}" alt="{{ fp.name }}" style="width: 100%; border-radius: 4px;"/></a>
+                  <div class="ex-product">
+                    <a href="{% url 'catalog:product_detail' slug=fp.slug %}"><img src="{% if fp.main_image %}{{ fp.main_image.image.url }}{% else %}{% static 'images/producto-card.jpg' %}{% endif %}" alt="{{ fp.name }}" width="100%"/></a>
                     <h4 class="shop-item-title font-alt" style="margin-top: 10px;"><a href="{% url 'catalog:product_detail' slug=fp.slug %}">{{ fp.name }}</a></h4>${{ fp.price|floatformat:0|intcomma }}
                   </div>
                 </div>
                 {% endfor %}
               </div>
               {% endif %}
+            </div>
+          </div>
+        </section>
+        {% endif %}
+
+        {% if instagram_config.activo and instagram_posts %}
+        <hr class="divider-w">
+        <section class="module instagram-section">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-8 col-sm-offset-2 text-center">
+                <h2 class="module-title font-alt">{{ instagram_config.titulo }}</h2>
+                {% if instagram_config.subtitulo %}
+                <div class="module-subtitle font-serif">{{ instagram_config.subtitulo }}</div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="row mt-30">
+              <div class="col-sm-12 text-center">
+                <div class="owl-carousel instagram-carousel" data-items="5" data-navigation="true" data-pagination="false"
+                     data-responsive='{"0":{"items":2},"768":{"items":3},"1200":{"items":4}}'>
+                {% for post in instagram_posts %}
+                {% if post.link %}
+                <a class="instagram-card instagram-card--link" href="{{ post.link }}" target="_blank" rel="noopener noreferrer">
+                {% else %}
+                <div class="instagram-card">
+                {% endif %}
+                  <div class="instagram-card__media">
+                    <img src="{{ post.image.url }}" alt="{{ post.alt_text|default:'Publicación de Instagram' }}" width="1080" height="1080">
+                    {% if post.link %}
+                    <span class="instagram-card__overlay">
+                      <i class="fa fa-instagram"></i>
+                    </span>
+                    {% endif %}
+                  </div>
+                {% if post.link %}
+                </a>
+                {% else %}
+                </div>
+                {% endif %}
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+            <div class="row mt-30">
+              <div class="col-sm-12 align-center">
+                <a class="btn btn-b btn-round" href="https://www.instagram.com/{{ instagram_config.usuario }}/" target="_blank" rel="noopener noreferrer">
+                  {{ instagram_config.texto_boton|default:"Seguir en Instagram" }}
+                </a>
+              </div>
             </div>
           </div>
         </section>

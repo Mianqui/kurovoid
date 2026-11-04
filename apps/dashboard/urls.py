@@ -44,4 +44,10 @@ urlpatterns = [
     path("tallas/editar/<int:pk>/", views.SizeUpdateView.as_view(), name="size_update"),
     path("tallas/eliminar/<int:pk>/", views.SizeDeleteView.as_view(), name="size_delete"),
     path("tallas/api/crear/", views.size_api_create, name="size_api_create"),
+    # Instagram
+    path("instagram/", views.InstagramAdminView.as_view(), name="instagram"),
+    path("instagram/nueva/", views.InstagramPostCreateView.as_view(), name="instagram_post_create"),
+    path("instagram/editar/<int:pk>/", views.InstagramPostUpdateView.as_view(), name="instagram_post_update"),
+    path("instagram/eliminar/<int:pk>/", views.InstagramPostDeleteView.as_view(), name="instagram_post_delete"),
+    path("instagram/reordenar/", views.instagram_reordenar, name="instagram_reordenar"),
 ]
