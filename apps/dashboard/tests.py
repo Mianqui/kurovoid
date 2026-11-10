@@ -1,3 +1,4 @@
+import json
 import shutil
 import tempfile
 from io import BytesIO
@@ -160,6 +161,64 @@ class InstagramDashboardTests(TestCase):
 
         self.assertRedirects(response, reverse("dashboard:instagram"))
         self.assertFalse(InstagramPost.objects.filter(pk=post.pk).exists())
+
+    def test_staff_can_delete_post_via_ajax(self):
+        self.client.force_login(self.staff)
+        post = InstagramPost.objects.create(
+            image=make_image(),
+            alt_text="Se elimina sin recargar",
+            is_active=True,
+        )
+
+        response = self.client.post(
+            reverse("dashboard:instagram_post_ajax_delete", args=[post.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {"success": True})
+        self.assertFalse(InstagramPost.objects.filter(pk=post.pk).exists())
+
+    def test_staff_can_reorder_posts(self):
+        self.client.force_login(self.staff)
+        primero = InstagramPost.objects.create(
+            image=make_image("a.png"), alt_text="A", orden=0
+        )
+        segundo = InstagramPost.objects.create(
+            image=make_image("b.png"), alt_text="B", orden=1
+        )
+        tercero = InstagramPost.objects.create(
+            image=make_image("c.png"), alt_text="C", orden=2
+        )
+
+        response = self.client.post(
+            reverse("dashboard:instagram_reordenar"),
+            data=json.dumps({"ids": [tercero.pk, primero.pk, segundo.pk]}),
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {"success": True})
+        primero.refresh_from_db()
+        segundo.refresh_from_db()
+        tercero.refresh_from_db()
+        self.assertEqual(tercero.orden, 0)
+        self.assertEqual(primero.orden, 1)
+        self.assertEqual(segundo.orden, 2)
+
+    def test_reorder_rejects_invalid_json(self):
+        self.client.force_login(self.staff)
+
+        response = self.client.post(
+            reverse("dashboard:instagram_reordenar"),
+            data="no-es-json",
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertJSONEqual(
+            response.content,
+            {"success": False, "error": "Datos inválidos."},
+        )
 
     def test_staff_can_update_instagram_config(self):
         self.client.force_login(self.staff)

@@ -945,7 +945,8 @@ class InstagramAdminView(TemplateView):
         config = InstagramConfig.load()
         context["config"] = config
         context["form"] = InstagramConfigForm(instance=config)
-        context["posts"] = InstagramPost.objects.all().order_by("orden", "-created_at")
+        posts = InstagramPost.objects.all().order_by("orden", "-created_at")
+        context["posts"] = posts
         return context
 
     def post(self, request, *args, **kwargs):
@@ -1013,9 +1014,48 @@ class InstagramPostDeleteView(DeleteView):
 @staff_member_required(login_url=settings.LOGIN_URL)
 def instagram_reordenar(request):
     import json
-    data = json.loads(request.body)
+
+    try:
+        data = json.loads(request.body)
+    except (ValueError, TypeError):
+        return JsonResponse(
+            {"success": False, "error": "Datos inválidos."}, status=400
+        )
+
     ids = data.get("ids", [])
-    for idx, post_id in enumerate(ids):
-        InstagramPost.objects.filter(id=post_id).update(orden=idx)
+    if not isinstance(ids, list):
+        return JsonResponse(
+            {"success": False, "error": "Formato de orden inválido."}, status=400
+        )
+
+    ids_validos = []
+    for post_id in ids:
+        try:
+            ids_validos.append(int(post_id))
+        except (TypeError, ValueError):
+            continue
+
+    posts = InstagramPost.objects.in_bulk(ids_validos)
+    for idx, post_id in enumerate(ids_validos):
+        post = posts.get(post_id)
+        if post is not None and post.orden != idx:
+            post.orden = idx
+            post.save(update_fields=["orden"])
+
+    return JsonResponse({"success": True})
+
+
+@require_POST
+@login_required
+@staff_member_required(login_url=settings.LOGIN_URL)
+def instagram_post_ajax_delete(request, pk):
+    post = get_object_or_404(InstagramPost, pk=pk)
+    # Eliminar el archivo de imagen del disco
+    if post.image:
+        try:
+            post.image.delete(save=False)
+        except Exception:
+            pass
+    post.delete()
     return JsonResponse({"success": True})
 
