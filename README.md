@@ -67,14 +67,15 @@ npm run build:css
 
 ## Carrusel de Instagram
 
-El inicio incluye un carrusel manual de imágenes cuadradas (1:1) después de la sección "Productos Destacados". No utiliza la API de Instagram, tokens ni sincronización automática: las imágenes y sus enlaces se administran desde el panel.
+El inicio incluye un carrusel manual de imágenes verticales (4:5) después de la sección "Productos Destacados". No utiliza la API de Instagram, tokens ni sincronización automática: las imágenes y sus enlaces se administran desde el panel.
 
 ### Administración
 
 1. Entra a `/dashboard/instagram/` con un usuario staff.
-2. Activa o desactiva la sección y edita el título, el subtítulo y el usuario de Instagram.
-3. Sube imágenes de 1080 × 1080 px. Se recomienda ese tamaño; cualquier imagen se recorta en cuadrado sin deformarse.
+2. Activa o desactiva la sección y edita el título, el subtítulo, el usuario de Instagram y el texto del botón. Todos los textos son opcionales.
+3. Sube imágenes de 1080 × 1350 px. Se recomienda ese tamaño; cualquier imagen se recorta en formato 4:5 sin deformarse.
 4. Cada imagen puede tener un enlace fijo que se abre en una pestaña nueva. Si el enlace se deja vacío, la imagen se muestra pero no es clicable.
-5. Usa el campo `orden` para definir la posición (el número menor aparece primero) y `is_active` para mostrar u ocultar cada imagen.
+5. Usa las flechas de cada tarjeta o arrástrala desde su número para cambiar el orden; el nuevo orden se guarda sin recargar. Los botones **Editar** y **Eliminar** permiten modificar o borrar cada tarjeta.
+6. La sección incluye una vista previa con el mismo diseño del inicio.
 
-La sección solo se muestra en el inicio cuando está activa y existe al menos una imagen activa. En móvil se ven 2 imágenes, en tablet 3 y en escritorio 5.
+La sección solo se muestra en el inicio cuando está activa y existe al menos una imagen activa. En móvil se ven 2 imágenes, en tablet 3 y en escritorio 4.

@@ -50,8 +50,8 @@ class InstagramPostForm(forms.ModelForm):
         }
         help_texts = {
             "image": (
-                "Sube una imagen cuadrada de 1080 × 1080 px (formato publicación de "
-                "Instagram). Se mostrará recortada en cuadrado sin modificar el archivo original."
+                "Sube una imagen vertical de 1080 × 1350 px (formato 4:5). "
+                "Se mostrará recortada sin modificar el archivo original."
             ),
             "link": (
                 "Si lo dejas vacío, la imagen se muestra pero no se puede clicar."

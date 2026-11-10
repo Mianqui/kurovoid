@@ -407,6 +407,7 @@ console.log('%c Proudly Crafted with ZiOn.', 'background: #222; color: #bada55')
 
             var childCount = $(this).children().length;
             var shouldLoop = childCount > items;
+            var autoplayEnabled = $(this).attr('data-autoplay') !== 'false';
 
             var owlOptions = {
                 navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
@@ -416,7 +417,7 @@ console.log('%c Proudly Crafted with ZiOn.', 'background: #222; color: #bada55')
                 dotsSpeed: 400,
                 items: items,
                 navSpeed: 300,
-                autoplay: shouldLoop,
+                autoplay: autoplayEnabled ? shouldLoop : false,
                 autoplayTimeout: 4000,
                 autoplayHoverPause: true,
                 smartSpeed: 500,

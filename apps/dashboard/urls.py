@@ -49,5 +49,6 @@ urlpatterns = [
     path("instagram/nueva/", views.InstagramPostCreateView.as_view(), name="instagram_post_create"),
     path("instagram/editar/<int:pk>/", views.InstagramPostUpdateView.as_view(), name="instagram_post_update"),
     path("instagram/eliminar/<int:pk>/", views.InstagramPostDeleteView.as_view(), name="instagram_post_delete"),
+    path("instagram/eliminar-ajax/<int:pk>/", views.instagram_post_ajax_delete, name="instagram_post_ajax_delete"),
     path("instagram/reordenar/", views.instagram_reordenar, name="instagram_reordenar"),
 ]
