@@ -2965,29 +2965,6 @@ Google map
   padding: 64px 0 56px;
 }
 
-.instagram-handle {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 14px;
-  color: #111111;
-  font-size: 11px;
-  letter-spacing: 2.5px;
-  text-transform: uppercase;
-  text-decoration: none;
-  transition: color 0.25s ease;
-}
-
-.instagram-handle:hover,
-.instagram-handle:focus {
-  color: #6b7280;
-  text-decoration: none;
-}
-
-.instagram-handle i {
-  font-size: 15px;
-}
-
 .instagram-section .module-title {
   margin-bottom: 0.5rem;
   letter-spacing: 4px;
