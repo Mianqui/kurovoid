@@ -20,12 +20,27 @@ class ProductForm(forms.ModelForm):
         widget=forms.CheckboxSelectMultiple,
         required=False,
     )
+    orden = forms.IntegerField(
+        required=False,
+        min_value=0,
+        initial=0,
+        label="Posición en la tienda",
+        help_text="1 = primero. Si se deja en 0, el producto se coloca al final.",
+        widget=forms.NumberInput(
+            attrs={
+                "class": INPUT_CLASSES,
+                "min": 0,
+                "placeholder": "Ej: 1",
+                "inputmode": "numeric",
+            }
+        ),
+    )
 
     class Meta:
         model = Product
         fields = [
             "name", "category", "gender", "description", "price",
-            "stock", "sizes", "colors", "is_featured", "is_active",
+            "stock", "sizes", "colors", "is_featured", "is_active", "orden",
         ]
         widgets = {
             "name": forms.TextInput(attrs={"class": INPUT_CLASSES, "placeholder": "Nombre del producto"}),
@@ -37,6 +52,9 @@ class ProductForm(forms.ModelForm):
             "is_featured": forms.CheckboxInput(attrs={"class": CHECKBOX_CLASSES}),
             "is_active": forms.CheckboxInput(attrs={"class": CHECKBOX_CLASSES}),
         }
+
+    def clean_orden(self):
+        return self.cleaned_data.get("orden") or 0
 
     def save(self, commit=True):
         product = super().save(commit=False)

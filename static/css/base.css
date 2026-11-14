@@ -102,6 +102,7 @@ body {
 .font-mono { font-family: ui-monospace, SFMono-Regular, 'Courier New', monospace; }
 
 .text-xs { font-size: 0.75rem; line-height: 1rem; }
+.text-\[10px\] { font-size: 0.625rem; line-height: 0.875rem; }
 .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
 .text-base { font-size: 1rem; line-height: 1.5rem; }
 .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
@@ -273,6 +274,7 @@ body {
 .border-zinc-800 { border-color: var(--zinc-800); }
 .border-emerald-800 { border-color: var(--emerald-800); }
 .border-red-800 { border-color: var(--red-800); }
+.border-white\/20 { border-color: rgba(255, 255, 255, 0.2); }
 
 /* --- Background colors --- */
 .bg-zinc-700 { background-color: var(--zinc-700); }
@@ -285,9 +287,13 @@ body {
 .bg-emerald-950 { background-color: var(--emerald-950); }
 .bg-amber-950 { background-color: var(--amber-950); }
 .bg-white { background-color: #ffffff; }
+.bg-zinc-800\/50 { background-color: rgba(39, 39, 42, 0.5); }
 .bg-black\/40 { background-color: rgba(0, 0, 0, 0.4); }
 .bg-black\/50 { background-color: rgba(0, 0, 0, 0.5); }
 .bg-black\/60 { background-color: rgba(0, 0, 0, 0.6); }
+.bg-black\/70 { background-color: rgba(0, 0, 0, 0.7); }
+.bg-blue-500\/90 { background-color: rgba(59, 130, 246, 0.9); }
+.bg-red-600\/90 { background-color: rgba(220, 38, 38, 0.9); }
 .bg-transparent { background-color: transparent; }
 
 /* --- Text colors --- */
@@ -309,6 +315,7 @@ body {
 .opacity-0 { opacity: 0; }
 .opacity-10 { opacity: 0.1; }
 .opacity-50 { opacity: 0.5; }
+.opacity-100 { opacity: 1; }
 
 /* --- Overflow --- */
 .overflow-hidden { overflow: hidden; }
@@ -330,6 +337,7 @@ body {
 .pointer-events-auto { pointer-events: auto; }
 
 /* --- Shadows --- */
+.shadow-sm { box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); }
 .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1); }
 .shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); }
 .shadow-lg-dark { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2); }
@@ -366,15 +374,18 @@ body {
 
 .h-1\.5 { height: 0.375rem; }
 .h-3 { height: 0.75rem; }
+.h-3\.5 { height: 0.875rem; }
 .h-4 { height: 1rem; }
 .h-5 { height: 1.25rem; }
 .h-8 { height: 2rem; }
 .h-10 { height: 2.5rem; }
 .h-12 { height: 3rem; }
+.h-14 { height: 3.5rem; }
 .h-16 { height: 4rem; }
 .h-24 { height: 6rem; }
 
 .w-3 { width: 0.75rem; }
+.w-3\.5 { width: 0.875rem; }
 .w-4 { width: 1rem; }
 .w-5 { width: 1.25rem; }
 .w-8 { width: 2rem; }
@@ -410,6 +421,7 @@ body {
 /* --- Divide utility --- */
 .divide-y > * + * { border-top: 1px solid; }
 .divide-zinc-800 > * + * { border-color: var(--zinc-800); }
+.divide-\[var\(--border\)\] > * + * { border-color: var(--border); }
 
 /* --- Hover utilities --- */
 .hover\:opacity-70:hover { opacity: 0.7; }
@@ -432,6 +444,7 @@ body {
 .hover\:bg-green-500\/30:hover { background-color: rgba(34, 197, 94, 0.3); }
 .hover\:underline:hover { text-decoration: underline; }
 .hover\:border-white:hover { border-color: var(--accent); }
+.hover\:border-accent:hover { border-color: var(--accent); }
 
 /* Focus */
 .focus\:outline-none:focus { outline: none; }
@@ -717,6 +730,9 @@ input[type="file"] {
 /* --- Group hover (product cards) --- */
 .group:hover .group-hover\:scale-105 {
     transform: scale(1.05);
+}
+.group:hover .group-hover\:opacity-100 {
+    opacity: 1;
 }
 
 /* --- has-checked for form labels --- */

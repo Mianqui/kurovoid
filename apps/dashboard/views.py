@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.db.models import Count, Prefetch, Q, Sum
+from django.db.models import Count, Max, Prefetch, Q, Sum
 from django.db.models.functions import TruncDate
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
@@ -27,6 +27,15 @@ from .models import ConfiguracionTienda, InstagramConfig
 
 from django.conf import settings
 decorators = [login_required, staff_member_required(login_url=settings.LOGIN_URL)]
+
+
+def _parse_hover_index(value, total):
+    """Devuelve un índice válido de imagen o None."""
+    try:
+        index = int(value)
+    except (TypeError, ValueError):
+        return None
+    return index if 0 <= index < total else None
 
 
 @method_decorator(decorators, name="dispatch")
@@ -84,6 +93,12 @@ class ProductCreateView(CreateView):
     template_name = "dashboard/product_form.html"
     success_url = reverse_lazy("dashboard:product_list")
 
+    def get_initial(self):
+        initial = super().get_initial()
+        ultimo = Product.objects.aggregate(Max("orden"))["orden__max"] or 0
+        initial["orden"] = ultimo + 1
+        return initial
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["editing"] = False
@@ -96,14 +111,28 @@ class ProductCreateView(CreateView):
     def form_valid(self, form):
         self.object = form.save()
         files = self.request.FILES.getlist("images") or self.request.FILES.getlist("image")
+        created_images = []
         for idx, file in enumerate(files):
-            ProductImage.objects.create(
-                product=self.object,
-                image=file,
-                is_main=(idx == 0),
-                alt_text=self.object.name,
-                orden=idx,
+            created_images.append(
+                ProductImage.objects.create(
+                    product=self.object,
+                    image=file,
+                    is_main=(idx == 0),
+                    alt_text=self.object.name,
+                    orden=idx,
+                )
             )
+        if created_images:
+            hover_index = _parse_hover_index(
+                self.request.POST.get("hover_index"), len(created_images)
+            )
+            if hover_index is None or hover_index == 0:
+                hover_index = 1 if len(created_images) > 1 else None
+            if hover_index is not None:
+                hover_img = created_images[hover_index]
+                if not hover_img.is_main:
+                    hover_img.is_hover = True
+                    hover_img.save(update_fields=["is_hover"])
         messages.success(self.request, "Producto creado exitosamente.")
         return redirect(self.get_success_url())
 
@@ -136,18 +165,32 @@ class ProductUpdateView(UpdateView):
         files = self.request.FILES.getlist("images") or self.request.FILES.getlist("image")
         if files:
             has_main = self.object.images.filter(is_main=True).exists()
-            curr_count = self.object.images.count()
+            ultimo = self.object.images.aggregate(Max("orden"))["orden__max"] or -1
+            created_images = []
             for idx, file in enumerate(files):
                 is_main = not has_main if idx == 0 else False
                 if is_main:
                     has_main = True
-                ProductImage.objects.create(
-                    product=self.object,
-                    image=file,
-                    is_main=is_main,
-                    alt_text=self.object.name,
-                    orden=curr_count + idx,
+                created_images.append(
+                    ProductImage.objects.create(
+                        product=self.object,
+                        image=file,
+                        is_main=is_main,
+                        alt_text=self.object.name,
+                        orden=ultimo + 1 + idx,
+                    )
                 )
+            if not self.object.images.filter(is_hover=True).exists():
+                hover_index = _parse_hover_index(
+                    self.request.POST.get("hover_index"), len(created_images)
+                )
+                if hover_index is None:
+                    hover_index = 1 if len(created_images) > 1 else None
+                if hover_index is not None:
+                    hover_img = created_images[hover_index]
+                    if not hover_img.is_main:
+                        hover_img.is_hover = True
+                        hover_img.save(update_fields=["is_hover"])
         messages.success(self.request, "Producto actualizado exitosamente.")
         return redirect(self.get_success_url())
 
@@ -567,23 +610,33 @@ def producto_reponer_stock(request, pk):
 @staff_member_required(login_url=settings.LOGIN_URL)
 def producto_subir_imagen(request, pk):
     producto = get_object_or_404(Product, id=pk)
-    if producto.images.count() >= 10:
+    total_actual = producto.images.count()
+    if total_actual >= 10:
         return JsonResponse({"success": False, "error": "Límite de 10 imágenes alcanzado."}, status=400)
 
     archivos = request.FILES.getlist("files")
+    has_main = producto.images.filter(is_main=True).exists()
+    ultimo = producto.images.aggregate(Max("orden"))["orden__max"] or -1
     subidas = []
-    for archivo in archivos:
-        if producto.images.count() >= 10:
+    for idx, archivo in enumerate(archivos):
+        if total_actual + len(subidas) >= 10:
             break
+        is_main = not has_main
+        if is_main:
+            has_main = True
         img = ProductImage.objects.create(
             product=producto,
             image=archivo,
+            is_main=is_main,
+            alt_text=producto.name,
+            orden=ultimo + 1 + idx,
         )
         subidas.append({
             "id": img.id,
             "url": img.image.url,
             "alt_text": img.alt_text,
             "is_main": img.is_main,
+            "is_hover": img.is_hover,
             "orden": img.orden,
         })
     return JsonResponse({"success": True, "images": subidas})
@@ -616,8 +669,29 @@ def producto_imagen_principal(request, img_id):
     img = get_object_or_404(ProductImage, id=img_id)
     ProductImage.objects.filter(product=img.product, is_main=True).update(is_main=False)
     img.is_main = True
-    img.save(update_fields=["is_main"])
-    return JsonResponse({"success": True, "is_main": True})
+    if img.is_hover:
+        # La imagen principal no debe ser también la imagen hover.
+        img.is_hover = False
+        img.save(update_fields=["is_main", "is_hover"])
+    else:
+        img.save(update_fields=["is_main"])
+    return JsonResponse({"success": True, "is_main": True, "is_hover": img.is_hover})
+
+
+@require_POST
+@login_required
+@staff_member_required(login_url=settings.LOGIN_URL)
+def producto_imagen_hover(request, img_id):
+    img = get_object_or_404(ProductImage, id=img_id)
+    if img.is_main:
+        return JsonResponse(
+            {"success": False, "error": "La imagen principal no puede ser la imagen hover."},
+            status=400,
+        )
+    ProductImage.objects.filter(product=img.product, is_hover=True).update(is_hover=False)
+    img.is_hover = True
+    img.save(update_fields=["is_hover"])
+    return JsonResponse({"success": True, "is_hover": True})
 
 
 @login_required

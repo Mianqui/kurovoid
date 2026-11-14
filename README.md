@@ -49,6 +49,12 @@ Para cargar datos de demostración:
 docker compose -f compose.dev.yml exec web python manage.py seed_data
 ```
 
+El usuario demo `cliente` se crea sin contraseña de acceso. Para asignarle una, define `SEED_CLIENT_PASSWORD` en el archivo `.env` antes de ejecutar el comando, o cámbiala después con:
+
+```bash
+docker compose -f compose.dev.yml exec web python manage.py changepassword cliente
+```
+
 Para crear un administrador:
 
 ```bash

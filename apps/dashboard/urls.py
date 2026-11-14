@@ -27,6 +27,7 @@ urlpatterns = [
     path("productos/imagen/<int:img_id>/eliminar/", views.producto_eliminar_imagen, name="producto_eliminar_imagen"),
     path("productos/<int:pk>/imagen/reordenar/", views.producto_reordenar_imagenes, name="producto_reordenar_imagenes"),
     path("productos/imagen/<int:img_id>/principal/", views.producto_imagen_principal, name="producto_imagen_principal"),
+    path("productos/imagen/<int:img_id>/hover/", views.producto_imagen_hover, name="producto_imagen_hover"),
     path("productos/imagen/<int:img_id>/alt-text/", views.producto_actualizar_alt_text, name="producto_alt_text"),
     path("exportar/productos/", views.ExportProductosCSV, name="export_productos"),
     path("exportar/pedidos/", views.ExportPedidosCSV, name="export_pedidos"),

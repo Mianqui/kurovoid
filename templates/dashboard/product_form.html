@@ -4,13 +4,11 @@
 {% block title %}{% if editing %}Editar{% else %}Nuevo{% endif %} producto{% endblock %}
 
 {% block extra_head %}
-{% if editing %}
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <style>
   .sortable-ghost { opacity: 0.4; border: 2px dashed #3b82f6 !important; }
   .sortable-chosen { box-shadow: 0 0 0 2px rgba(59,130,246,0.3); }
 </style>
-{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -74,23 +72,30 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
         </svg>
         <p class="theme-text-primary text-sm font-medium mb-1">Arrastra múltiples imágenes aquí o haz clic para seleccionarlas</p>
-        <p class="text-zinc-500 text-xs">La primera imagen seleccionada será la imagen principal del producto</p>
+        <p class="text-zinc-500 text-xs">La primera imagen será la principal. Arrástralas para cambiar el orden.</p>
         <input type="file" name="images" id="productImagesInput" accept="image/*" multiple class="hidden">
       </div>
 
       <!-- Previsualización de imágenes seleccionadas para subir -->
       <div id="selectedImagesPreviewContainer" class="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 hidden"></div>
+      <input type="hidden" name="hover_index" id="hoverIndexInput" value="">
+      <p id="selectedImagesHint" class="mt-2 text-xs theme-text-secondary hidden">
+        Arrastra para ordenar. La primera será la principal; usa el botón del ojo para elegir la imagen que se verá al pasar el ratón.
+      </p>
     </div>
 
     <div>
       <div class="flex items-center justify-between mb-2">
         <label class="dash-label mb-0">Tallas</label>
-        <div class="flex items-center gap-3">
-          <button type="button" onclick="openQuickSizeModal()" class="text-xs theme-accent-text hover:underline inline-flex items-center gap-1">
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="openQuickSizeModal()" class="dash-action-btn dash-action-btn-accent">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Nueva talla
           </button>
-          <a href="{% url 'dashboard:size_list' %}" target="_blank" class="text-xs theme-text-secondary hover:text-white">Gestionar</a>
+          <a href="{% url 'dashboard:size_list' %}" target="_blank" rel="noopener" class="dash-action-btn">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+            Gestionar
+          </a>
         </div>
       </div>
       <div id="sizes-container" class="flex flex-wrap gap-2">
@@ -109,12 +114,15 @@
     <div>
       <div class="flex items-center justify-between mb-2">
         <label class="dash-label mb-0">Colores</label>
-        <div class="flex items-center gap-3">
-          <button type="button" onclick="openQuickColorModal()" class="text-xs theme-accent-text hover:underline inline-flex items-center gap-1">
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="openQuickColorModal()" class="dash-action-btn dash-action-btn-accent">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             Nuevo color
           </button>
-          <a href="{% url 'dashboard:color_list' %}" target="_blank" class="text-xs theme-text-secondary hover:text-white">Gestionar</a>
+          <a href="{% url 'dashboard:color_list' %}" target="_blank" rel="noopener" class="dash-action-btn">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 17L17 7M17 7H9M17 7v8"/></svg>
+            Gestionar
+          </a>
         </div>
       </div>
       <div id="colors-container" class="flex flex-wrap gap-3">
@@ -149,6 +157,18 @@
         <label class="text-sm cursor-pointer" for="{{ form.is_active.id_for_label }}">Producto activo</label>
         {% for error in form.is_active.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
       </div>
+    </div>
+
+    <div class="pt-4 border-t theme-border">
+      <div class="flex items-center justify-between mb-2">
+        <label class="dash-label mb-0" for="{{ form.orden.id_for_label }}">Posición en la tienda</label>
+        <span class="text-xs theme-text-secondary">Menor número = aparece antes</span>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="w-32 shrink-0">{{ form.orden }}</div>
+        <p class="text-xs theme-text-secondary">Usa <strong class="theme-text-primary">1</strong> para el primer puesto. Si lo dejas en <strong class="theme-text-primary">0</strong>, se colocará al final automáticamente.</p>
+      </div>
+      {% for error in form.orden.errors %}<p class="text-red-400 text-xs mt-1">{{ error }}</p>{% endfor %}
     </div>
 
     <div class="flex items-center gap-3 pt-4">
@@ -213,12 +233,15 @@
 <hr class="theme-border my-10">
 
 <div id="galeria-section" class="w-full">
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex items-center justify-between mb-2">
     <h2 class="font-heading text-xl font-bold">Galería de imágenes</h2>
     <span class="text-xs theme-text-secondary">
       <span id="img-count">{{ product_images|length }}</span> / 10
     </span>
   </div>
+  <p class="text-xs theme-text-secondary mb-6">
+    Arrastra las filas para ordenar. La imagen <span class="text-blue-400 font-medium">Principal</span> se ve en la tienda; la imagen <span class="text-emerald-400 font-medium">Hover</span> aparece al pasar el ratón.
+  </p>
 
   {% comment %}Upload zone{% endcomment %}
   <div id="drop-zone" class="dash-dropzone cursor-pointer mb-8">
@@ -243,6 +266,7 @@
           <th>Vista previa</th>
           <th>Texto alternativo</th>
           <th class="text-center">Principal</th>
+          <th class="text-center">Hover</th>
           <th class="text-right">Acción</th>
         </tr>
       </thead>
@@ -273,6 +297,23 @@
             {% else %}
             <button onclick="setPrincipal({{ img.id }})" class="px-3 py-1 text-xs font-medium theme-text-secondary hover:text-white hover:bg-zinc-700 rounded-lg transition-colors">
               Marcar
+            </button>
+            {% endif %}
+          </td>
+          <td class="px-4 py-3 text-center">
+            {% if img.is_hover %}
+            <span class="badge badge-hover">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              Hover
+            </span>
+            {% elif img.is_main %}
+            <span class="text-xs text-zinc-600" title="La imagen principal no puede ser hover">—</span>
+            {% else %}
+            <button onclick="setHover({{ img.id }})" class="px-3 py-1 text-xs font-medium theme-text-secondary hover:text-white hover:bg-zinc-700 rounded-lg transition-colors" title="Mostrar esta imagen al pasar el ratón">
+              Elegir
             </button>
             {% endif %}
           </td>
@@ -308,7 +349,14 @@
     const pDropzone = document.getElementById('product-images-dropzone');
     const pInput = document.getElementById('productImagesInput');
     const previewContainer = document.getElementById('selectedImagesPreviewContainer');
+    const hoverInput = document.getElementById('hoverIndexInput');
+    const previewHint = document.getElementById('selectedImagesHint');
     let selectedFiles = [];
+    let hoverKey = null;
+
+    function fileKey(file) {
+      return `${file.name}:${file.size}:${file.lastModified || 0}`;
+    }
 
     if (pDropzone && pInput && previewContainer) {
       pDropzone.addEventListener('click', () => pInput.click());
@@ -337,23 +385,63 @@
       });
     }
 
+    if (previewContainer && typeof Sortable !== 'undefined') {
+      previewSortable = new Sortable(previewContainer, {
+        animation: 150,
+        filter: 'button',
+        preventOnFilter: false,
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        onEnd: function() {
+          const ordenados = [];
+          Array.from(previewContainer.children).forEach(card => {
+            const index = parseInt(card.dataset.index, 10);
+            if (!Number.isNaN(index) && selectedFiles[index]) {
+              ordenados.push(selectedFiles[index]);
+            }
+          });
+          if (ordenados.length === selectedFiles.length) {
+            selectedFiles = ordenados;
+          }
+          syncInputFiles();
+          renderPreviews();
+        }
+      });
+    }
+
     function addFiles(fileList) {
       for (let i = 0; i < fileList.length; i++) {
-        // Avoid duplicate files by name and size
-        const f = fileList[i];
-        if (!selectedFiles.some(existing => existing.name === f.name && existing.size === f.size)) {
-          selectedFiles.push(f);
+        const file = fileList[i];
+        if (!selectedFiles.some(existing => fileKey(existing) === fileKey(file))) {
+          selectedFiles.push(file);
         }
+      }
+      if (selectedFiles.length > 1 && !hoverKey) {
+        hoverKey = fileKey(selectedFiles[1]);
       }
       syncInputFiles();
       renderPreviews();
     }
 
-    window.removeSelectedFile = function(index) {
+    function removeSelectedFile(index) {
+      const removed = selectedFiles[index];
       selectedFiles.splice(index, 1);
+      if (removed && hoverKey === fileKey(removed)) {
+        hoverKey = selectedFiles.length > 1 ? fileKey(selectedFiles[1]) : null;
+      }
+      if (selectedFiles.length < 2) {
+        hoverKey = null;
+      }
       syncInputFiles();
       renderPreviews();
-    };
+    }
+
+    function selectHover(index) {
+      if (index <= 0 || !selectedFiles[index]) return;
+      hoverKey = fileKey(selectedFiles[index]);
+      updateHoverInput();
+      renderPreviews();
+    }
 
     function syncInputFiles() {
       try {
@@ -365,49 +453,92 @@
       }
     }
 
+    function updateHoverInput() {
+      if (!hoverInput) return;
+      const index = selectedFiles.findIndex(file => fileKey(file) === hoverKey);
+      hoverInput.value = index > 0 ? String(index) : '';
+    }
+
     function renderPreviews() {
       if (selectedFiles.length === 0) {
         previewContainer.innerHTML = '';
         previewContainer.classList.add('hidden');
+        if (previewHint) previewHint.classList.add('hidden');
+        if (hoverInput) hoverInput.value = '';
         return;
       }
+
+      if (selectedFiles.length < 2) {
+        hoverKey = null;
+      } else if (
+        hoverKey === fileKey(selectedFiles[0]) ||
+        !selectedFiles.some(file => fileKey(file) === hoverKey)
+      ) {
+        hoverKey = fileKey(selectedFiles[1]);
+      }
+
       previewContainer.innerHTML = '';
       previewContainer.classList.remove('hidden');
+      if (previewHint) previewHint.classList.remove('hidden');
+      updateHoverInput();
 
       selectedFiles.forEach((file, index) => {
+        const isMain = index === 0;
+        const isHover = !isMain && fileKey(file) === hoverKey;
+
         const card = document.createElement('div');
-        card.className = 'relative group aspect-square rounded-lg overflow-hidden border border-zinc-700 bg-zinc-800 shadow-sm';
+        card.className = 'preview-card' + (isMain ? ' is-main' : '') + (isHover ? ' is-hover' : '');
+        card.dataset.index = String(index);
+        card.title = isMain ? 'Imagen principal' : 'Arrastra para cambiar el orden';
 
         const img = document.createElement('img');
-        img.className = 'w-full h-full object-cover';
         const reader = new FileReader();
         reader.onload = (e) => { img.src = e.target.result; };
         reader.readAsDataURL(file);
+        card.appendChild(img);
 
-        const overlay = document.createElement('div');
-        overlay.className = 'absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-2';
+        const orderBadge = document.createElement('span');
+        orderBadge.className = 'preview-order';
+        orderBadge.textContent = String(index + 1);
+        card.appendChild(orderBadge);
+
+        if (isMain || isHover) {
+          const status = document.createElement('span');
+          status.className = 'preview-status ' + (isMain ? 'preview-status-main' : 'preview-status-hover');
+          status.textContent = isMain ? 'Principal' : 'Hover';
+          card.appendChild(status);
+        }
+
+        const actions = document.createElement('div');
+        actions.className = 'preview-actions';
+
+        if (!isMain) {
+          const hoverBtn = document.createElement('button');
+          hoverBtn.type = 'button';
+          hoverBtn.className = 'preview-action' + (isHover ? ' is-active' : '');
+          hoverBtn.title = isHover ? 'Imagen hover seleccionada' : 'Usar como imagen hover';
+          hoverBtn.setAttribute('aria-label', hoverBtn.title);
+          hoverBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>';
+          hoverBtn.onclick = (e) => {
+            e.stopPropagation();
+            selectHover(index);
+          };
+          actions.appendChild(hoverBtn);
+        }
 
         const removeBtn = document.createElement('button');
         removeBtn.type = 'button';
-        removeBtn.className = 'p-1.5 bg-red-600/90 hover:bg-red-600 text-white rounded-full transition-colors';
+        removeBtn.className = 'preview-action preview-action-danger';
         removeBtn.title = 'Quitar imagen';
+        removeBtn.setAttribute('aria-label', 'Quitar imagen');
         removeBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>';
         removeBtn.onclick = (e) => {
           e.stopPropagation();
-          window.removeSelectedFile(index);
+          removeSelectedFile(index);
         };
-        overlay.appendChild(removeBtn);
+        actions.appendChild(removeBtn);
 
-        card.appendChild(img);
-        card.appendChild(overlay);
-
-        if (index === 0) {
-          const badge = document.createElement('span');
-          badge.className = 'absolute top-1.5 left-1.5 px-2 py-0.5 bg-blue-500/90 text-white text-[10px] font-semibold rounded-full shadow-sm';
-          badge.textContent = 'Principal';
-          card.appendChild(badge);
-        }
-
+        card.appendChild(actions);
         previewContainer.appendChild(card);
       });
     }
@@ -421,9 +552,29 @@
   const dropZone = document.getElementById('drop-zone');
   const fileInput = document.getElementById('file-input');
   const uploadPreviews = document.getElementById('upload-previews');
-  const imagenesTbody = document.getElementById('imagenes-tbody');
+  let imagenesTbody = document.getElementById('imagenes-tbody');
   const emptyGallery = document.getElementById('empty-gallery');
   const imgCount = document.getElementById('img-count');
+
+  function mainBadgeHtml() {
+    return '<span class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-full"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg> Principal</span>';
+  }
+
+  function mainButtonHtml(imgId) {
+    return `<button onclick="setPrincipal(${imgId})" class="px-3 py-1 text-xs font-medium text-zinc-500 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors">Marcar</button>`;
+  }
+
+  function hoverBadgeHtml() {
+    return '<span class="badge badge-hover"><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg> Hover</span>';
+  }
+
+  function hoverButtonHtml(imgId) {
+    return `<button onclick="setHover(${imgId})" class="px-3 py-1 text-xs font-medium text-zinc-500 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors">Elegir</button>`;
+  }
+
+  function hoverEmptyHtml() {
+    return '<span class="text-xs text-zinc-600" title="La imagen principal no puede ser hover">—</span>';
+  }
 
   // Drag & drop + click upload
   dropZone.addEventListener('click', () => fileInput.click());
@@ -471,7 +622,29 @@
 
   function agregarImagenAlGrid(img) {
     if (emptyGallery) emptyGallery.remove();
-    if (!imagenesTbody) return;
+    if (!imagenesTbody) {
+      const container = document.createElement('div');
+      container.className = 'border border-zinc-800 rounded-xl overflow-hidden';
+      const tbl = document.createElement('table');
+      tbl.className = 'w-full text-sm';
+      tbl.innerHTML = `
+        <thead>
+          <tr class="bg-zinc-900 text-zinc-500 text-left border-b border-zinc-800">
+            <th class="px-4 py-3 font-medium w-10"></th>
+            <th class="px-4 py-3 font-medium">Vista previa</th>
+            <th class="px-4 py-3 font-medium">Texto alternativo</th>
+            <th class="px-4 py-3 font-medium text-center">Principal</th>
+            <th class="px-4 py-3 font-medium text-center">Hover</th>
+            <th class="px-4 py-3 font-medium text-right">Acción</th>
+          </tr>
+        </thead>
+        <tbody id="imagenes-tbody"></tbody>
+      `;
+      container.appendChild(tbl);
+      document.querySelector('#galeria-section').appendChild(container);
+      imagenesTbody = document.getElementById('imagenes-tbody');
+      initSortable();
+    }
 
     const tr = document.createElement('tr');
     tr.className = 'hover:bg-zinc-800/50 transition-colors cursor-grab active:cursor-grabbing';
@@ -491,7 +664,10 @@
         <input type="text" value="${img.alt_text}" placeholder="Descripción de la imagen" class="w-full min-w-[140px] theme-bg-primary theme-border rounded-lg px-3 py-1.5 text-xs theme-text-secondary placeholder-zinc-600 focus:outline-none focus:border-accent transition-colors" onchange="actualizarAltText(${img.id}, this.value)">
       </td>
       <td class="px-4 py-3 text-center">
-        <button onclick="setPrincipal(${img.id})" class="px-3 py-1 text-xs font-medium text-zinc-500 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors">Marcar</button>
+        ${img.is_main ? mainBadgeHtml() : mainButtonHtml(img.id)}
+      </td>
+      <td class="px-4 py-3 text-center">
+        ${img.is_hover ? hoverBadgeHtml() : (img.is_main ? hoverEmptyHtml() : hoverButtonHtml(img.id))}
       </td>
       <td class="px-4 py-3 text-right">
         <button onclick="eliminarImagen(${img.id})" class="p-1.5 text-zinc-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors" title="Eliminar">
@@ -502,29 +678,6 @@
       </td>
     `;
     imagenesTbody.appendChild(tr);
-    // rebuild table if was showing empty state
-    const table = imagenesTbody.closest('table');
-    if (!table) {
-      const container = document.createElement('div');
-      container.className = 'border border-zinc-800 rounded-xl overflow-hidden';
-      const tbl = document.createElement('table');
-      tbl.className = 'w-full text-sm';
-      tbl.innerHTML = `
-        <thead>
-          <tr class="bg-zinc-900 text-zinc-500 text-left border-b border-zinc-800">
-            <th class="px-4 py-3 font-medium w-10"></th>
-            <th class="px-4 py-3 font-medium">Vista previa</th>
-            <th class="px-4 py-3 font-medium">Texto alternativo</th>
-            <th class="px-4 py-3 font-medium text-center">Principal</th>
-            <th class="px-4 py-3 font-medium text-right">Acción</th>
-          </tr>
-        </thead>
-        <tbody id="imagenes-tbody"></tbody>
-      `;
-      container.appendChild(tbl);
-      document.querySelector('#galeria-section').appendChild(container);
-    }
-    initSortable();
   }
 
   function eliminarImagen(imgId) {
@@ -564,16 +717,43 @@
     })
     .then(r => r.json())
     .then(data => {
-      if (data.success) {
-        document.querySelectorAll('#imagenes-tbody [data-id]').forEach(tr => {
-          const td = tr.querySelectorAll('td')[3];
-          if (tr.dataset.id == imgId) {
-            td.innerHTML = '<span class="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs font-semibold rounded-full"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg> Principal</span>';
-          } else {
-            td.innerHTML = `<button onclick="setPrincipal(${tr.dataset.id})" class="px-3 py-1 text-xs font-medium text-zinc-500 hover:text-white hover:bg-zinc-700 rounded-lg transition-colors">Marcar</button>`;
-          }
-        });
+      if (!data.success) return;
+      document.querySelectorAll('#imagenes-tbody [data-id]').forEach(tr => {
+        const celdas = tr.querySelectorAll('td');
+        const esPrincipal = tr.dataset.id == imgId;
+        const eraPrincipal = celdas[3].textContent.includes('Principal');
+        celdas[3].innerHTML = esPrincipal ? mainBadgeHtml() : mainButtonHtml(tr.dataset.id);
+        if (esPrincipal) {
+          celdas[4].innerHTML = hoverEmptyHtml();
+        } else if (eraPrincipal) {
+          celdas[4].innerHTML = hoverButtonHtml(tr.dataset.id);
+        }
+      });
+    });
+  }
+
+  function setHover(imgId) {
+    fetch(`/dashboard/productos/imagen/${imgId}/hover/`, {
+      method: 'POST',
+      headers: { 'X-CSRFToken': csrf }
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) {
+        alert(data.error || 'No se pudo seleccionar la imagen hover.');
+        return;
       }
+      document.querySelectorAll('#imagenes-tbody [data-id]').forEach(tr => {
+        const celdas = tr.querySelectorAll('td');
+        const esPrincipal = celdas[3].textContent.includes('Principal');
+        if (tr.dataset.id == imgId) {
+          celdas[4].innerHTML = hoverBadgeHtml();
+        } else if (esPrincipal) {
+          celdas[4].innerHTML = hoverEmptyHtml();
+        } else {
+          celdas[4].innerHTML = hoverButtonHtml(tr.dataset.id);
+        }
+      });
     });
   }
 
