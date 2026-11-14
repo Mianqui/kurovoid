@@ -32,6 +32,7 @@
                 <th>Categoría</th>
                 <th>Precio</th>
                 <th>Stock</th>
+                <th class="text-center">Posición</th>
                 <th>Estado</th>
                 <th>Acciones</th>
             </tr>
@@ -56,6 +57,7 @@
                     {% endif %}
                   </div>
                 </td>
+                <td class="theme-text-secondary">{{ product.category.name|default:"—" }}</td>
                 <td>${{ product.price }}</td>
                 <td>
                     {% if product.stock == 0 %}
@@ -66,6 +68,7 @@
                     <span class="text-emerald-400">{{ product.stock }}</span>
                     {% endif %}
                 </td>
+                <td class="text-center font-medium">{{ product.orden }}</td>
                 <td>
                     {% if product.is_active %}
                     <span class="badge status-badge-active">Activo</span>
@@ -90,7 +93,7 @@
             </tr>
             {% empty %}
             <tr>
-                <td colspan="7" class="text-center theme-text-secondary py-8">No hay productos registrados.</td>
+                <td colspan="8" class="text-center theme-text-secondary py-8">No hay productos registrados.</td>
             </tr>
             {% endfor %}
         </tbody>

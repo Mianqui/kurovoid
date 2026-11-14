@@ -9,12 +9,13 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from PIL import Image
 
-from catalog.models import InstagramPost
+from catalog.models import InstagramPost, Product, ProductImage
 
 from dashboard.forms.instagram import InstagramConfigForm, InstagramPostForm
 from dashboard.models import InstagramConfig
 
 TEST_MEDIA_ROOT = tempfile.mkdtemp()
+PRODUCT_TEST_MEDIA_ROOT = tempfile.mkdtemp()
 TEST_STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {
@@ -316,3 +317,139 @@ class InstagramDashboardTests(TestCase):
         self.assertTrue(post.image.name.endswith(".png"))
         self.assertTrue(post.image.storage.exists(post.image.name))
         self.assertEqual(post.alt_text, "Imagen subida desde el panel")
+
+
+@override_settings(MEDIA_ROOT=PRODUCT_TEST_MEDIA_ROOT, STORAGES=TEST_STORAGES)
+class ProductAdminTests(TestCase):
+    @classmethod
+    def tearDownClass(cls):
+        super().tearDownClass()
+        shutil.rmtree(PRODUCT_TEST_MEDIA_ROOT, ignore_errors=True)
+
+    def setUp(self):
+        self.staff = User.objects.create_user(
+            username="staff-productos",
+            password="clave-segura",
+            is_staff=True,
+        )
+
+    def test_las_posiciones_nuevas_se_asignan_al_final(self):
+        primero = Product.objects.create(name="Primero", price=10, stock=1)
+        segundo = Product.objects.create(name="Segundo", price=10, stock=1)
+
+        self.assertEqual(primero.orden, 1)
+        self.assertEqual(segundo.orden, 2)
+
+    def test_la_tienda_respeta_la_posicion_manual(self):
+        Product.objects.create(name="Tercero", price=10, stock=1, orden=30)
+        Product.objects.create(name="Primero", price=10, stock=1, orden=10)
+        Product.objects.create(name="Segundo", price=10, stock=1, orden=20)
+
+        response = self.client.get(reverse("catalog:product_list"))
+
+        self.assertEqual(
+            [producto.name for producto in response.context["products"]],
+            ["Primero", "Segundo", "Tercero"],
+        )
+
+    def test_el_formulario_muestra_posicion_y_selector_hover(self):
+        self.client.force_login(self.staff)
+
+        response = self.client.get(reverse("dashboard:product_create"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Posición en la tienda")
+        self.assertContains(response, 'name="hover_index"')
+        self.assertContains(response, "selectedImagesPreviewContainer")
+
+    def test_crear_producto_respeta_orden_y_hover_elegidos(self):
+        self.client.force_login(self.staff)
+
+        response = self.client.post(
+            reverse("dashboard:product_create"),
+            {
+                "name": "Camisa ordenada",
+                "category": "",
+                "gender": "hombre",
+                "description": "",
+                "price": "50.00",
+                "stock": "4",
+                "is_active": "on",
+                "orden": "7",
+                "hover_index": "2",
+                "images": [
+                    make_image("orden-1.png"),
+                    make_image("orden-2.png"),
+                    make_image("orden-3.png"),
+                ],
+            },
+        )
+
+        self.assertRedirects(response, reverse("dashboard:product_list"))
+        product = Product.objects.get(name="Camisa ordenada")
+        images = list(product.images.order_by("orden", "id"))
+        self.assertEqual(product.orden, 7)
+        self.assertEqual([img.is_main for img in images], [True, False, False])
+        self.assertEqual([img.is_hover for img in images], [False, False, True])
+        self.assertEqual([img.orden for img in images], [0, 1, 2])
+
+    def test_se_puede_cambiar_la_imagen_hover(self):
+        self.client.force_login(self.staff)
+        product = Product.objects.create(name="Camisa hover", price=10, stock=1)
+        principal = ProductImage.objects.create(
+            product=product,
+            image=make_image("principal.png"),
+            is_main=True,
+            orden=0,
+        )
+        primera_opcion = ProductImage.objects.create(
+            product=product,
+            image=make_image("hover-1.png"),
+            orden=1,
+        )
+        segunda_opcion = ProductImage.objects.create(
+            product=product,
+            image=make_image("hover-2.png"),
+            orden=2,
+        )
+
+        self.assertEqual(product.second_image(), primera_opcion)
+
+        response = self.client.post(
+            reverse("dashboard:producto_imagen_hover", args=[segunda_opcion.pk])
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertJSONEqual(response.content, {"success": True, "is_hover": True})
+        primera_opcion.refresh_from_db()
+        segunda_opcion.refresh_from_db()
+        self.assertFalse(primera_opcion.is_hover)
+        self.assertTrue(segunda_opcion.is_hover)
+        self.assertEqual(product.second_image(), segunda_opcion)
+
+        response = self.client.post(
+            reverse("dashboard:producto_imagen_hover", args=[principal.pk])
+        )
+
+        self.assertEqual(response.status_code, 400)
+        self.assertFalse(response.json()["success"])
+
+    def test_subir_imagenes_en_edicion_mantiene_orden_y_principal(self):
+        self.client.force_login(self.staff)
+        product = Product.objects.create(name="Camisa edición", price=10, stock=1)
+
+        response = self.client.post(
+            reverse("dashboard:producto_subir_imagen", args=[product.pk]),
+            {
+                "files": [
+                    make_image("edicion-1.png"),
+                    make_image("edicion-2.png"),
+                ]
+            },
+        )
+
+        self.assertEqual(response.status_code, 200)
+        images = list(product.images.order_by("orden", "id"))
+        self.assertEqual(len(images), 2)
+        self.assertEqual([img.is_main for img in images], [True, False])
+        self.assertEqual([img.orden for img in images], [0, 1])

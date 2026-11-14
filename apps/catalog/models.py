@@ -69,14 +69,22 @@ class Product(models.Model):
         help_text="Marcar para mostrar en la sección de Productos Destacados del Inicio",
     )
     is_active = models.BooleanField(default=True)
+    orden = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Posición en tienda",
+        help_text="Número menor = aparece antes. Si se deja en 0, se coloca al final.",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        ordering = ["-created_at"]
+        ordering = ["orden", "-created_at"]
 
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        if not self.orden:
+            ultimo = Product.objects.aggregate(models.Max("orden"))["orden__max"] or 0
+            self.orden = ultimo + 1
         super().save(*args, **kwargs)
 
     @property
@@ -88,19 +96,25 @@ class Product(models.Model):
         return "ok"
 
     def main_image(self):
-        if hasattr(self, "_main_images") and self._main_images:
-            return self._main_images[0]
-        main = self.images.filter(is_main=True).first()
-        if main:
-            return main
-        return self.images.first()
+        if hasattr(self, "_main_images"):
+            if self._main_images:
+                return self._main_images[0]
+            return self.images.first()
+        images = list(self.images.all())
+        for img in images:
+            if img.is_main:
+                return img
+        return images[0] if images else None
 
     def second_image(self):
-        """Devuelve la segunda imagen (no principal) para el efecto hover."""
+        """Devuelve la imagen marcada como hover o, si no hay, la siguiente."""
         main = self.main_image()
-        if main:
-            img = self.images.exclude(pk=main.pk).first()
-            if img:
+        images = list(self.images.all())
+        for img in images:
+            if img.is_hover and (not main or img.pk != main.pk):
+                return img
+        for img in images:
+            if not main or img.pk != main.pk:
                 return img
         return None
 
@@ -115,6 +129,11 @@ class ProductImage(models.Model):
     )
     image = models.ImageField(upload_to="productos/galeria/")
     is_main = models.BooleanField(default=False)
+    is_hover = models.BooleanField(
+        default=False,
+        verbose_name="Imagen hover",
+        help_text="Imagen que se muestra al pasar el ratón por la tarjeta del producto.",
+    )
     alt_text = models.CharField(max_length=200, blank=True)
     orden = models.IntegerField(default=0)
 
