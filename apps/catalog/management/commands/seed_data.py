@@ -1,3 +1,5 @@
+import os
+
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand
 
@@ -87,8 +89,22 @@ class Command(BaseCommand):
             },
         )
         if created:
-            user.set_password("Cliente2025!")
-            user.save()
-            self.stdout.write("  + Usuario 'cliente' / 'Cliente2025!'")
+            password = os.environ.get("SEED_CLIENT_PASSWORD")
+            if password:
+                user.set_password(password)
+                user.save(update_fields=["password"])
+                self.stdout.write(
+                    "  + Usuario 'cliente' creado con la contraseña de SEED_CLIENT_PASSWORD."
+                )
+            else:
+                user.set_unusable_password()
+                user.save(update_fields=["password"])
+                self.stdout.write(
+                    self.style.WARNING(
+                        "  + Usuario 'cliente' creado sin contraseña de acceso. "
+                        "Define SEED_CLIENT_PASSWORD o usa "
+                        "'python manage.py changepassword cliente'."
+                    )
+                )
 
         self.stdout.write(self.style.SUCCESS("¡BD poblada exitosamente!"))
